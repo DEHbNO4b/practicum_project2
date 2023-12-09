@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package gophKeeper;
+
+option go_package="./gophKeeper";
+
+service Keeper{
+    rpc Register(RegisterRequest) returns (RegisterResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
+}
+message RegisterRequest{
+    string login =1;
+    string email =2;
+    string password = 3;
+}
+
+message RegisterResponse{
+    int64 user_id =1;
+}
+
+message LoginRequest{
+    string login = 1;
+    string email =2;
+    string password =3;
+}
+
+message LoginResponse{
+    string token =1;
+}
