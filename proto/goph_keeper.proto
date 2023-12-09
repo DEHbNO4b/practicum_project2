@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package gophKeeper;
 
-option go_package="./gophKeeper";
+option go_package="gophKeeper/proto;pb";
 
 service Keeper{
     rpc Register(RegisterRequest) returns (RegisterResponse);

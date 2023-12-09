@@ -4,21 +4,23 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/DEHbNO4b/practicum_project2/internal/app"
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
 )
 
 func main() {
-	// TODO: get config
+	// getting config
 	cfg := config.MustLoad()
 
-	// TODO: logger setup
+	//  logger setup
 	log := setupLogger(cfg.Env)
 
 	log.Info("starting app")
 	log.Info("cfg", slog.Any("", cfg))
-	//TODO: creat storage
 
-	//TODO: crate server
+	application := app.New(log, cfg.GRPC.Port, cfg.DBconfig.ToString(), cfg.GRPC.Timeout)
+	application.GRPCSrv.MustRun()
+
 }
 
 func setupLogger(env string) *slog.Logger {
