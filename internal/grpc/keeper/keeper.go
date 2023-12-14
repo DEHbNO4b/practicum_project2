@@ -24,11 +24,15 @@ type ServerApi struct {
 func Register(srv *grpc.Server, auth Auth) {
 	pb.RegisterKeeperServer(srv, &ServerApi{auth: auth})
 }
+
 func (s *ServerApi) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+
 	res := pb.RegisterResponse{}
+
 	if err := validateRegister(req); err != nil {
 		return nil, err
 	}
+
 	id, err := s.auth.RegisterNewUser(ctx, req.GetLogin(), req.GetPassword())
 	if err != nil {
 		if errors.Is(err, storage.ErrUserExists) {
@@ -36,7 +40,9 @@ func (s *ServerApi) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.
 		}
 		return nil, status.Error(codes.Internal, "internal error")
 	}
+
 	res.UserId = id
+
 	return &res, nil
 }
 func (s *ServerApi) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {

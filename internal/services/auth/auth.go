@@ -79,7 +79,9 @@ func (a *Auth) Login(ctx context.Context, login string, password string) (string
 
 	return token, nil
 }
+
 func (a *Auth) RegisterNewUser(ctx context.Context, login string, password string) (int64, error) {
+
 	const op = "auth.RegisterNewUser"
 	log := a.log.With(slog.String("op", op))
 
