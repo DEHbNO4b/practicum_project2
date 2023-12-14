@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS users
+(
+login varchar(150) NOT NULL UNIQUE,
+pass_hash BLOB NOT NULL
+)
