@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -33,20 +34,26 @@ type GRPCConfig struct {
 }
 
 func MustLoad() ServerConfig {
-	path := fetchConfigPath()
+	path := filepath.FromSlash(fetchConfigPath())
+	// f, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	// if err != nil {
+	// 	panic(err)
+
+	// }
+	// defer f.Close()
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		panic("config file is not exists: " + path)
 	}
 	var serverCfg ServerConfig
 	if err := cleanenv.ReadConfig(path, &serverCfg); err != nil {
-		panic("config file is not exists: " + path)
+		panic("cannot read config: " + err.Error())
 	}
 	return serverCfg
 }
 func fetchConfigPath() string {
 	var res string
 
-	flag.StringVar(&res, "cfg", "./config/server.yaml", "path to server config yaml file")
+	flag.StringVar(&res, "cfg", "config/server.yaml", "path to server config yaml file")
 	flag.Parse()
 
 	return res
