@@ -29,11 +29,12 @@ func (db DBconfig) ToString() string {
 }
 
 type GRPCConfig struct {
+	Host    string        `yaml:"host"`
 	Port    int           `yaml:"port"`
 	Timeout time.Duration `yaml:"timeout"`
 }
 
-func MustLoad() ServerConfig {
+func MustLoadServCfg() ServerConfig {
 	path := filepath.FromSlash(fetchConfigPath())
 	// f, err := os.OpenFile(path, os.O_RDONLY, 0666)
 	// if err != nil {
@@ -53,7 +54,7 @@ func MustLoad() ServerConfig {
 func fetchConfigPath() string {
 	var res string
 
-	flag.StringVar(&res, "cfg", "config/server.yaml", "path to server config yaml file")
+	flag.StringVar(&res, "cfg", "./config/server.yaml", "path to server config yaml file")
 	flag.Parse()
 
 	return res

@@ -5,15 +5,18 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/storage"
+
 	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Storage struct {
-	db *sql.DB
+	db   *sql.DB
+	once *sync.Once
 }
 
 func New(storagePath string) (*Storage, error) {
@@ -50,6 +53,11 @@ func (s *Storage) SaveUser(ctx context.Context, login string, paskHash []byte) (
 	return 0, nil
 }
 
+func (s *Storage) Close() {
+	if s.db != nil {
+		s.once.Do(func() { s.db.Close() })
+	}
+}
 func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 	op := "storage.postgres.User"
 

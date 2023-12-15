@@ -21,10 +21,12 @@ var (
 
 type UserSaver interface {
 	SaveUser(ctx context.Context, login string, passHash []byte) (uid int64, err error)
+	Close()
 }
 
 type UserProvider interface {
 	User(ctx context.Context, login string) (models.User, error)
+	Close()
 }
 type Auth struct {
 	log         *slog.Logger

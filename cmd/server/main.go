@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// getting config
-	cfg := config.MustLoad()
+	cfg := config.MustLoadServCfg()
 
 	//  logger setup
 	log := setupLogger(cfg.Env)
