@@ -9,7 +9,6 @@ build_client:
 	GOARCH=amd64 GOOS=windows go build -o . ./cmd/client
 
 run: gen build_server build_client
-	./client
 	./server
 
 build_migrate:

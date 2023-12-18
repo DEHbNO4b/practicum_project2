@@ -16,15 +16,20 @@ const (
 )
 
 func TestRegisterLogin_Login_HappyPath(t *testing.T) {
+
 	ctx, st := suite.New(t)
+
 	login := gofakeit.Name()
 	pass := gofakeit.Password(true, true, true, true, false, 10)
 
-	_, err := st.Client.Register(ctx, &pb.RegisterRequest{
+	respReg, err := st.Client.Register(ctx, &pb.RegisterRequest{
 		Login:    login,
 		Password: pass,
 	})
+
 	require.NoError(t, err)
+
+	assert.NotEmpty(t, respReg.GetUserId())
 
 	respLogin, err := st.Client.Login(ctx, &pb.LoginRequest{
 		Login:    login,
@@ -44,4 +49,52 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
 	assert.True(t, ok)
 
 	assert.Equal(t, login, claims["login"].(string))
+	// assert.Equal(t, re)
+}
+func TestDoubleRegister(t *testing.T) {
+	ctx, st := suite.New(t)
+
+	login := gofakeit.Name()
+	pass := gofakeit.Password(true, true, true, true, false, 10)
+
+	_, err := st.Client.Register(ctx, &pb.RegisterRequest{
+		Login:    login,
+		Password: pass,
+	})
+	require.NoError(t, err)
+
+	_, err = st.Client.Register(ctx, &pb.RegisterRequest{
+		Login:    login,
+		Password: pass,
+	})
+
+	require.Error(t, err)
+
+	assert.ErrorContains(t, err, "user already exists")
+
+}
+
+func TestLoginError(t *testing.T) {
+	ctx, st := suite.New(t)
+
+	login := gofakeit.Name()
+	pass := gofakeit.Password(true, true, true, true, false, 10)
+
+	respReg, err := st.Client.Register(ctx, &pb.RegisterRequest{
+		Login:    login,
+		Password: pass,
+	})
+
+	require.NoError(t, err)
+
+	assert.NotEmpty(t, respReg.GetUserId())
+
+	_, err = st.Client.Login(ctx, &pb.LoginRequest{
+		Login:    login,
+		Password: "wrong_pass",
+	})
+
+	assert.Error(t, err)
+
+	assert.ErrorContains(t, err, "invalid credentials")
 }

@@ -46,6 +46,10 @@ func New(log *slog.Logger, us UserSaver, up UserProvider, app models.App, tokenT
 		tokenTTL:    tokenTTL,
 	}
 }
+func (a *Auth) Stop() {
+	a.usrProvider.Close()
+	a.usrSaver.Close()
+}
 func (a *Auth) Login(ctx context.Context, login string, password string) (string, error) {
 	const op = "auth.Login"
 	log := a.log.With(slog.String("op", op))

@@ -33,7 +33,11 @@ func (s *Storage) SaveUser(ctx context.Context, login string, paskHash []byte) (
 
 	op := "storage.postgres.SaveUser"
 
-	_, err := s.db.Exec("INSERT INTO users(login,pass_hash)VALUES($1,$2)", login, paskHash)
+	row := s.db.QueryRowContext(ctx, "INSERT INTO users(login,pass_hash)VALUES($1,$2) returning id", login, paskHash)
+
+	var id int64
+
+	err := row.Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -50,7 +54,7 @@ func (s *Storage) SaveUser(ctx context.Context, login string, paskHash []byte) (
 	// 	return 0, fmt.Errorf("%s %w", op, err)
 	// }
 
-	return 0, nil
+	return id, nil
 }
 
 func (s *Storage) Close() {

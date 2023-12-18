@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
-	"github.com/DEHbNO4b/practicum_project2/internal/storage"
 	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -35,7 +34,7 @@ func (s *ServerApi) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.
 
 	id, err := s.auth.RegisterNewUser(ctx, req.GetLogin(), req.GetPassword())
 	if err != nil {
-		if errors.Is(err, storage.ErrUserExists) {
+		if errors.Is(err, auth.ErrUserExists) {
 			return nil, status.Error(codes.AlreadyExists, "user already exists")
 		}
 		return nil, status.Error(codes.Internal, "internal error")
@@ -58,7 +57,7 @@ func (s *ServerApi) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginR
 	if err != nil {
 
 		if errors.Is(err, auth.ErrInvalidCredentials) {
-			return nil, status.Error(codes.InvalidArgument, "invalid ")
+			return nil, status.Error(codes.InvalidArgument, "invalid credentials")
 		}
 
 		return nil, status.Error(codes.Internal, "internal error")

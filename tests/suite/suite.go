@@ -19,11 +19,11 @@ type Suite struct {
 
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
-	t.Parallel()
+	// t.Parallel()
 
 	cfg := config.MustLoadClientCfg()
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.GRPC.Timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.FileCfg.GRPC.Timeout)
 
 	t.Cleanup(func() {
 		t.Helper()
@@ -32,7 +32,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 
 	conn, err := grpc.DialContext(
 		ctx,
-		cfg.GRPC.Host+":"+strconv.Itoa(cfg.GRPC.Port),
+		cfg.FileCfg.GRPC.Host+":"+strconv.Itoa(cfg.FileCfg.GRPC.Port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
