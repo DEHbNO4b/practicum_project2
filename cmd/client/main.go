@@ -27,10 +27,15 @@ func main() {
 
 	switch cfg.Flags.LaunchMode {
 	case "l":
-		client.Login()
+		_, err := client.Login()
+		if err != nil {
+			return
+		}
 
 	case "r":
-		client.Registert()
+		_, err := client.Registert()
+		if err != nil {
+			return
+		}
 	}
-
 }

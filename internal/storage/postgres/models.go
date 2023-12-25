@@ -5,3 +5,10 @@ type User struct {
 	Login    string
 	PassHash string
 }
+
+type LogPassData struct {
+	UserID int64
+	Login  string
+	Pass   string
+	Meta   string
+}

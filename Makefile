@@ -15,4 +15,4 @@ build_migrate:
 	go build -o . ./cmd/migrator
 
 migrate: build_migrate
-	./migrator --storage-path=./storage/keeper.db --migrations-path=./migrations
+	./migrator  --migrations-path=./migrations

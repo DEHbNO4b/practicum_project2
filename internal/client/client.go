@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -82,7 +83,7 @@ func (g *GophClient) Login() (*pb.LoginResponse, error) {
 	return res, nil
 }
 
-func (g *GophClient) Registert() error {
+func (g *GophClient) Registert() (*pb.RegisterResponse, error) {
 	var (
 		login string
 		pass1 string
@@ -96,6 +97,29 @@ func (g *GophClient) Registert() error {
 	fmt.Scan(&pass2)
 	if pass1 != pass2 {
 		fmt.Printf("passwords must be equal, please try again")
+		return nil, errors.New("passwords not equal")
 	}
-	return nil
+
+	res, err := g.Client.Register(g.Ctx, &pb.RegisterRequest{
+		Login:    login,
+		Password: pass1,
+	})
+	if err != nil {
+		status, ok := status.FromError(err)
+		if ok {
+			if status.Code() == codes.AlreadyExists {
+				fmt.Println("user with this login already exists")
+				return res, err
+			} else {
+				// в остальных случаях выводим код ошибки в виде строки и сообщение
+				fmt.Println(status.Code(), status.Message())
+				return res, err
+			}
+		} else {
+			fmt.Printf("Не получилось распарсить ошибку %v", err)
+			return res, err
+		}
+	}
+
+	return res, nil
 }

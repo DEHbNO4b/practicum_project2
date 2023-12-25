@@ -21,9 +21,9 @@ func main() {
 	flag.StringVar(&migrationsTable, "migrations-table", "migrations", "migration table")
 	flag.Parse()
 
-	if storagePath == "" {
-		panic("storage path is required")
-	}
+	// if storagePath == "" {
+	// 	panic("storage path is required")
+	// }
 	if migrationsPath == "" {
 		panic("migrations path is required")
 	}
@@ -33,11 +33,15 @@ func main() {
 	)
 	if err != nil {
 		panic(err)
+		// fmt.Println("err", err)
+	}
+
+	if err := m.Down(); err != nil {
+		panic(err)
 	}
 	if err := m.Up(); err != nil {
 		if errors.Is(err, migrate.ErrNoChange) {
 			fmt.Println("no migration change")
-
 			return
 		}
 		panic(err)

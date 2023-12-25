@@ -28,6 +28,7 @@ type UserProvider interface {
 	User(ctx context.Context, login string) (models.User, error)
 	Close()
 }
+
 type Auth struct {
 	log         *slog.Logger
 	usrSaver    UserSaver
@@ -37,7 +38,13 @@ type Auth struct {
 }
 
 // New returns a new intance of Auth
-func New(log *slog.Logger, us UserSaver, up UserProvider, app models.App, tokenTTL time.Duration) *Auth {
+func New(
+	log *slog.Logger,
+	us UserSaver,
+	up UserProvider,
+	app models.App,
+	tokenTTL time.Duration,
+) *Auth {
 	return &Auth{
 		log:         log,
 		usrSaver:    us,

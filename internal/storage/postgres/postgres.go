@@ -48,12 +48,6 @@ func (s *Storage) SaveUser(ctx context.Context, login string, paskHash []byte) (
 			return 0, fmt.Errorf("%s %w", op, err)
 		}
 	}
-
-	// id, err := res.LastInsertId()
-	// if err != nil {
-	// 	return 0, fmt.Errorf("%s %w", op, err)
-	// }
-
 	return id, nil
 }
 
@@ -62,6 +56,7 @@ func (s *Storage) Close() {
 		s.once.Do(func() { s.db.Close() })
 	}
 }
+
 func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 	op := "storage.postgres.User"
 
@@ -82,4 +77,53 @@ func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 	u := userToDomain(user)
 
 	return u, nil
+}
+
+// LogPassStorage interface implementation
+func (s *Storage) SetLogPass(ctx context.Context, lp models.LogPassData) error {
+	op := "storage.postgres.SetLogPass"
+
+	local := domainLpToLocal(lp)
+
+	_, err := s.db.ExecContext(ctx,
+		`INSERT INTO logpassdata(user_id,login,pass,meta) VALUES($1,$2,$3,$4)`,
+		local.UserID, local.Login, local.Pass, local.Meta,
+	)
+	if err != nil {
+		return fmt.Errorf("%s %w", op, err)
+	}
+	return nil
+
+}
+func (s *Storage) LogPass(ctx context.Context, id int64) ([]models.LogPassData, error) {
+
+	op := "storage.postgres.LogPass"
+
+	ans := make([]models.LogPassData, 0, 10)
+
+	rows, err := s.db.QueryContext(ctx, `SELECT login, pass, meta from logpassdata WHERE user_id=$1`, id)
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			return ans, fmt.Errorf("%s %w", op, storage.ErrNoDataFound)
+		}
+
+		return ans, fmt.Errorf("%s %w", op, err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var lp LogPassData
+
+		if err := rows.Scan(&lp.Login, &lp.Pass, &lp.Meta); err != nil {
+			return ans, fmt.Errorf("%s %w", op, err)
+		}
+
+		dlp := lpToDomain(lp)
+
+		ans = append(ans, dlp)
+
+	}
+	return ans, nil
 }

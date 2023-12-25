@@ -23,3 +23,27 @@ func domainUserToLocal(u models.User) User {
 
 	return user
 }
+
+func lpToDomain(lp LogPassData) models.LogPassData {
+
+	dlp := models.LogPassData{}
+
+	dlp.SetLogin(lp.Login)
+	dlp.SetUserID(lp.UserID)
+	dlp.SetPass(lp.Pass)
+	dlp.SetMeta(lp.Meta)
+
+	return dlp
+}
+
+func domainLpToLocal(lp models.LogPassData) LogPassData {
+
+	local := LogPassData{}
+
+	local.UserID = lp.UserID()
+	local.Login = lp.Login()
+	local.Pass = lp.Pass()
+	local.Meta = lp.Meta()
+
+	return local
+}
