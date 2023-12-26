@@ -47,3 +47,78 @@ func domainLpToLocal(lp models.LogPassData) LogPassData {
 
 	return local
 }
+
+func textToDomain(t TextData) models.TextData {
+
+	td := models.TextData{}
+
+	td.SetUserID(t.UserID)
+	td.SetText(t.Text)
+	td.SetMeta(t.Meta)
+
+	return td
+}
+
+func domainTextToLocal(td models.TextData) TextData {
+
+	t := TextData{}
+
+	t.UserID = td.UserID()
+	t.Text = td.Text()
+	t.Meta = td.Meta()
+
+	return t
+}
+
+func binaryToDomain(b BinaryData) models.BinaryData {
+
+	bd := models.BinaryData{}
+
+	bd.SetUserID(b.UserID)
+	bd.SetData(b.Data)
+	bd.SetMeta(b.Meta)
+
+	return bd
+}
+
+func domainBinaryToLocal(bd models.BinaryData) BinaryData {
+
+	b := BinaryData{}
+
+	b.UserID = bd.UserID()
+	b.Data = bd.Data()
+	b.Meta = bd.Meta()
+
+	return b
+}
+
+func cardToDomain(c Card) (models.Card, error) {
+
+	cd := models.Card{}
+
+	cd.SetUserID(c.UserID)
+	err := cd.SetCardID(c.CardID)
+	if err != nil {
+		return cd, err
+	}
+	err = cd.SetPass(c.Pass)
+	if err != nil {
+		return cd, err
+	}
+	cd.SetDate(c.Date)
+	cd.SetMeta(c.Meta)
+
+	return cd, nil
+}
+
+func domainCardToLocal(cd models.Card) Card {
+	c := Card{}
+
+	c.UserID = cd.UserID()
+	c.CardID = cd.CardID()
+	c.Date = cd.Date()
+	c.Pass = cd.Pass()
+	c.Meta = cd.Meta()
+
+	return c
+}

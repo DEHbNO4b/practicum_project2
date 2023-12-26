@@ -1,2 +1,5 @@
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS logpassdata;
+DROP TABLE IF EXISTS logpass_data;
+DROP TABLE IF EXISTS text_data;
+DROP TABLE IF EXISTS binary_data;
+DROP TABLE IF EXISTS card_data;

@@ -36,9 +36,9 @@ func main() {
 		// fmt.Println("err", err)
 	}
 
-	if err := m.Down(); err != nil {
-		panic(err)
-	}
+	// if err := m.Down(); err != nil {
+	// 	panic(err)
+	// }
 	if err := m.Up(); err != nil {
 		if errors.Is(err, migrate.ErrNoChange) {
 			fmt.Println("no migration change")
