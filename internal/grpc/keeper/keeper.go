@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
 	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/proto"
 	"google.golang.org/grpc"
@@ -15,13 +16,47 @@ type Auth interface {
 	Login(ctx context.Context, login string, password string) (token string, err error)
 	RegisterNewUser(ctx context.Context, login string, password string) (userID int64, err error)
 }
+
+type LogPassKeeper interface {
+	SaveLogPass(ctx context.Context, lp models.LogPassData) error
+	LogPass(ctx context.Context, id int64) ([]models.LogPassData, error)
+}
+type TextKeeper interface {
+	SaveText(ctx context.Context, lp models.TextData) error
+	TextData(ctx context.Context, id int64) ([]models.TextData, error)
+}
+type BinaryKeeper interface {
+	SaveBinary(ctx context.Context, lp models.BinaryData) error
+	BinaryData(ctx context.Context, id int64) ([]models.BinaryData, error)
+}
+type CardKeeper interface {
+	SaveCard(ctx context.Context, lp models.Card) error
+	CardData(ctx context.Context, id int64) ([]models.Card, error)
+}
 type ServerApi struct {
 	pb.UnimplementedKeeperServer
-	auth Auth
+	auth         Auth
+	lpKeeper     LogPassKeeper
+	textKeeper   TextKeeper
+	binaryKeeper BinaryKeeper
+	cardKeeper   CardKeeper
 }
 
-func Register(srv *grpc.Server, auth Auth) {
-	pb.RegisterKeeperServer(srv, &ServerApi{auth: auth})
+func Register(
+	srv *grpc.Server,
+	auth Auth,
+	lpKeeper LogPassKeeper,
+	textKeeper TextKeeper,
+	binaryKeeper BinaryKeeper,
+	cardKeeper CardKeeper,
+) {
+	pb.RegisterKeeperServer(srv, &ServerApi{
+		auth:         auth,
+		lpKeeper:     lpKeeper,
+		textKeeper:   textKeeper,
+		binaryKeeper: binaryKeeper,
+		cardKeeper:   cardKeeper,
+	})
 }
 
 func (s *ServerApi) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {

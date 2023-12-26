@@ -18,10 +18,21 @@ type App struct {
 func New(
 	log *slog.Logger,
 	authService keeper.Auth,
+	lpKeeper keeper.LogPassKeeper,
+	textKeeper keeper.TextKeeper,
+	binaryKeeper keeper.BinaryKeeper,
+	cardKeeper keeper.CardKeeper,
 	port int,
 ) *App {
 	srv := grpc.NewServer()
-	keeper.Register(srv, authService)
+	keeper.Register(
+		srv,
+		authService,
+		lpKeeper,
+		textKeeper,
+		binaryKeeper,
+		cardKeeper,
+	)
 	return &App{log: log, gRPCServer: srv, port: port}
 }
 

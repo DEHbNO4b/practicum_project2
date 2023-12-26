@@ -29,6 +29,8 @@ func New(storagePath string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
+// UserSaver interface implementation
+
 func (s *Storage) SaveUser(ctx context.Context, login string, paskHash []byte) (int64, error) {
 
 	op := "storage.postgres.SaveUser"
@@ -56,6 +58,8 @@ func (s *Storage) Close() {
 		s.once.Do(func() { s.db.Close() })
 	}
 }
+
+// UserProvider interface implementation
 
 func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 	op := "storage.postgres.User"
@@ -95,6 +99,7 @@ func (s *Storage) SetLogPass(ctx context.Context, lp models.LogPassData) error {
 	return nil
 
 }
+
 func (s *Storage) LogPass(ctx context.Context, id int64) ([]models.LogPassData, error) {
 
 	op := "storage.postgres.LogPass"
