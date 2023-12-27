@@ -1,12 +1,17 @@
 package grpcapp
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/grpc/keeper"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type App struct {
@@ -65,4 +70,25 @@ func (a *App) Stop() {
 	a.log.With(slog.String("op", op)).Info("stopping gRPC server")
 	a.gRPCServer.GracefulStop()
 
+}
+
+func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+
+	var token string
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		values := md.Get("token")
+		if len(values) > 0 {
+			token = values[0]
+		}
+	}
+	if len(token) == 0 {
+		return nil, status.Error(codes.Unauthenticated, "missing token")
+	}
+
+	// if token != SecretToken {
+	// 	return nil, status.Error(codes.Unauthenticated, "invalid token")
+	// }
+
+	claims, err := jwt.GetClaims(token)
+	return handler(ctx, req)
 }
