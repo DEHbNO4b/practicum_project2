@@ -8,6 +8,7 @@ import (
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
 
 	pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
+	pbkeeper "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -90,6 +91,16 @@ func (s *ServerApi) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbaut
 	res.Token = t
 
 	return &res, nil
+}
+
+// keeper handlers implementation
+func (s *ServerApi) SaveLogPass(ctx context.Context, req *pbkeeper.SaveLogPassRequest) (*pbkeeper.SaveLogPassResponse, error) {
+
+	lpd := models.LogPassData{}
+	lpd.SetLogin(req.GetLogin())
+	lpd.SetPass(req.GetPassword())
+
+	err := s.keeper.SaveLogPass()
 }
 func validateLogin(req *pbauth.LoginRequest) error {
 

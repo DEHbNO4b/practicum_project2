@@ -61,7 +61,7 @@ func (a *Auth) Login(ctx context.Context, login string, password string) (string
 	const op = "auth.Login"
 	log := a.log.With(slog.String("op", op))
 
-	log.Info("attemtong to login user")
+	log.Info("attemting to login user")
 
 	user, err := a.usrProvider.User(ctx, login)
 	if err != nil {

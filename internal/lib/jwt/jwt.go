@@ -12,6 +12,7 @@ func NewToken(user models.User, app models.App, duration time.Duration) (string,
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["login"] = user.Login()
+	claims["user_id"] = user.ID()
 	claims["exp"] = time.Now().Add(duration).Unix()
 
 	tokenString, err := token.SignedString([]byte(app.Secret()))
