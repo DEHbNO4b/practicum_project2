@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/proto"
+	pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
 	"github.com/DEHbNO4b/practicum_project2/tests/suite"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang-jwt/jwt/v5"
@@ -22,7 +22,7 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
 	login := gofakeit.Name()
 	pass := gofakeit.Password(true, true, true, true, false, 10)
 
-	respReg, err := st.Client.Register(ctx, &pb.RegisterRequest{
+	respReg, err := st.Client.Register(ctx, &pbauth.RegisterRequest{
 		Login:    login,
 		Password: pass,
 	})
@@ -31,7 +31,7 @@ func TestRegisterLogin_Login_HappyPath(t *testing.T) {
 
 	assert.NotEmpty(t, respReg.GetUserId())
 
-	respLogin, err := st.Client.Login(ctx, &pb.LoginRequest{
+	respLogin, err := st.Client.Login(ctx, &pbauth.LoginRequest{
 		Login:    login,
 		Password: pass,
 	})
@@ -57,13 +57,13 @@ func TestDoubleRegister(t *testing.T) {
 	login := gofakeit.Name()
 	pass := gofakeit.Password(true, true, true, true, false, 10)
 
-	_, err := st.Client.Register(ctx, &pb.RegisterRequest{
+	_, err := st.Client.Register(ctx, &pbauth.RegisterRequest{
 		Login:    login,
 		Password: pass,
 	})
 	require.NoError(t, err)
 
-	_, err = st.Client.Register(ctx, &pb.RegisterRequest{
+	_, err = st.Client.Register(ctx, &pbauth.RegisterRequest{
 		Login:    login,
 		Password: pass,
 	})
@@ -80,7 +80,7 @@ func TestLoginError(t *testing.T) {
 	login := gofakeit.Name()
 	pass := gofakeit.Password(true, true, true, true, false, 10)
 
-	respReg, err := st.Client.Register(ctx, &pb.RegisterRequest{
+	respReg, err := st.Client.Register(ctx, &pbauth.RegisterRequest{
 		Login:    login,
 		Password: pass,
 	})
@@ -89,7 +89,7 @@ func TestLoginError(t *testing.T) {
 
 	assert.NotEmpty(t, respReg.GetUserId())
 
-	_, err = st.Client.Login(ctx, &pb.LoginRequest{
+	_, err = st.Client.Login(ctx, &pbauth.LoginRequest{
 		Login:    login,
 		Password: "wrong_pass",
 	})

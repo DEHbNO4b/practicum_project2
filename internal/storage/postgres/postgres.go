@@ -84,7 +84,7 @@ func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 }
 
 // LogPassStorage interface implementation
-func (s *Storage) SetLogPass(ctx context.Context, lp models.LogPassData) error {
+func (s *Storage) SaveLogPass(ctx context.Context, lp models.LogPassData) error {
 
 	op := "storage.postgres.SetLogPass"
 

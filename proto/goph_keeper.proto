@@ -2,28 +2,38 @@ syntax = "proto3";
 
 package gophKeeper;
 
-option go_package="gophKeeper/proto;pb";
+option go_package="proto/gen/keeper;pbkeeper";
 
 service Keeper{
-    rpc Register(RegisterRequest) returns (RegisterResponse);
-    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc SaveLogPass(SaveLogPassRequest) returns (SaveLogPassResponse);
+    rpc LogPass(UserId) returns (LogPassResponse);
+
+    // rpc SaveText(Text)returns();
+    // rpc Text()returns();
 }
-message RegisterRequest{
+
+message SaveLogPassRequest{
     string login =1;
-    string email =2;
-    string password = 3;
+    string password =2;
+}
+message SaveLogPassResponse{
+
 }
 
-message RegisterResponse{
-    int64 user_id =1;
+message UserId{
+ int64 userID =1;
 }
 
-message LoginRequest{
-    string login = 1;
-    string email =2;
-    string password =3;
+message LogPassResponse{
+    repeated LogPass logPass=1;
 }
 
-message LoginResponse{
-    string token =1;
+message LogPass{
+    string login =1;
+    string password =2;
 }
+
+// message Text{
+//     int64 userID=1;
+//     string text=2;
+// }

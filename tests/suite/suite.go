@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
-	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/proto"
+	pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -14,7 +14,7 @@ import (
 type Suite struct {
 	*testing.T
 	Cfg    config.ClientConfig
-	Client pb.KeeperClient
+	Client pbauth.AuthClient
 }
 
 func New(t *testing.T) (context.Context, *Suite) {
@@ -43,7 +43,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 	return ctx, &Suite{
 		T:      t,
 		Cfg:    cfg,
-		Client: pb.NewKeeperClient(conn),
+		Client: pbauth.NewAuthClient(conn),
 	}
 
 }

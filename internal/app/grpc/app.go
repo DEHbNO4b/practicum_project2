@@ -18,21 +18,19 @@ type App struct {
 func New(
 	log *slog.Logger,
 	authService keeper.Auth,
-	lpKeeper keeper.LogPassKeeper,
-	textKeeper keeper.TextKeeper,
-	binaryKeeper keeper.BinaryKeeper,
-	cardKeeper keeper.CardKeeper,
+	keeperService keeper.Keeper,
 	port int,
+
 ) *App {
+
 	srv := grpc.NewServer()
+
 	keeper.Register(
 		srv,
 		authService,
-		lpKeeper,
-		textKeeper,
-		binaryKeeper,
-		cardKeeper,
+		keeperService,
 	)
+
 	return &App{log: log, gRPCServer: srv, port: port}
 }
 
@@ -42,7 +40,9 @@ func (a *App) MustRun() {
 	}
 }
 func (a *App) run() error {
+
 	const op = "grpcapp.Run"
+
 	log := a.log.With(slog.String("op", op))
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
@@ -55,6 +55,7 @@ func (a *App) run() error {
 	if err := a.gRPCServer.Serve(l); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
+
 	return nil
 }
 
