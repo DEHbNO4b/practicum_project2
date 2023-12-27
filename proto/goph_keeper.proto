@@ -4,12 +4,29 @@ package gophKeeper;
 
 option go_package="proto/gen/keeper;pbkeeper";
 
-service Keeper{
+service GophKeeper{
+
+    rpc Register(AuthInfo) returns (RegisterResponse);
+    rpc Login(AuthInfo) returns (LoginResponse);
+
+    
     rpc SaveLogPass(SaveLogPassRequest) returns (SaveLogPassResponse);
     rpc LogPass(UserId) returns (LogPassResponse);
 
     // rpc SaveText(Text)returns();
     // rpc Text()returns();
+}
+message AuthInfo{
+    string login =1;
+    string password = 2;
+}
+
+message RegisterResponse{
+    int64 user_id =1;
+}
+
+message LoginResponse{
+    string token =1;
 }
 
 message SaveLogPassRequest{

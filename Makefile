@@ -1,6 +1,6 @@
 
 gen:
-	protoc --go_out=./proto/gen/auth --go_opt=paths=source_relative --go-grpc_out=./proto/gen/auth --go-grpc_opt=paths=source_relative proto/goph_auth.proto 
+	# protoc --go_out=./proto/gen/auth --go_opt=paths=source_relative --go-grpc_out=./proto/gen/auth --go-grpc_opt=paths=source_relative proto/goph_auth.proto 
 	protoc --go_out=./proto/gen/keeper --go_opt=paths=source_relative --go-grpc_out=./proto/gen/keeper --go-grpc_opt=paths=source_relative proto/goph_keeper.proto 
 
 build_server: 

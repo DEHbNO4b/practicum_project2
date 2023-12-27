@@ -20,6 +20,155 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type AuthInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Login    string `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+}
+
+func (x *AuthInfo) Reset() {
+	*x = AuthInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_goph_keeper_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AuthInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthInfo) ProtoMessage() {}
+
+func (x *AuthInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_goph_keeper_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthInfo.ProtoReflect.Descriptor instead.
+func (*AuthInfo) Descriptor() ([]byte, []int) {
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *AuthInfo) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *AuthInfo) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type RegisterResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId int64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+}
+
+func (x *RegisterResponse) Reset() {
+	*x = RegisterResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_goph_keeper_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RegisterResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterResponse) ProtoMessage() {}
+
+func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_goph_keeper_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
+func (*RegisterResponse) Descriptor() ([]byte, []int) {
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RegisterResponse) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+type LoginResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Token string `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+}
+
+func (x *LoginResponse) Reset() {
+	*x = LoginResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_goph_keeper_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LoginResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginResponse) ProtoMessage() {}
+
+func (x *LoginResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_goph_keeper_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
+func (*LoginResponse) Descriptor() ([]byte, []int) {
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *LoginResponse) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
 type SaveLogPassRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -32,7 +181,7 @@ type SaveLogPassRequest struct {
 func (x *SaveLogPassRequest) Reset() {
 	*x = SaveLogPassRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_goph_keeper_proto_msgTypes[0]
+		mi := &file_proto_goph_keeper_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +194,7 @@ func (x *SaveLogPassRequest) String() string {
 func (*SaveLogPassRequest) ProtoMessage() {}
 
 func (x *SaveLogPassRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_goph_keeper_proto_msgTypes[0]
+	mi := &file_proto_goph_keeper_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +207,7 @@ func (x *SaveLogPassRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveLogPassRequest.ProtoReflect.Descriptor instead.
 func (*SaveLogPassRequest) Descriptor() ([]byte, []int) {
-	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{0}
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SaveLogPassRequest) GetLogin() string {
@@ -84,7 +233,7 @@ type SaveLogPassResponse struct {
 func (x *SaveLogPassResponse) Reset() {
 	*x = SaveLogPassResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_goph_keeper_proto_msgTypes[1]
+		mi := &file_proto_goph_keeper_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -97,7 +246,7 @@ func (x *SaveLogPassResponse) String() string {
 func (*SaveLogPassResponse) ProtoMessage() {}
 
 func (x *SaveLogPassResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_goph_keeper_proto_msgTypes[1]
+	mi := &file_proto_goph_keeper_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,7 +259,7 @@ func (x *SaveLogPassResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveLogPassResponse.ProtoReflect.Descriptor instead.
 func (*SaveLogPassResponse) Descriptor() ([]byte, []int) {
-	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{1}
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{4}
 }
 
 type UserId struct {
@@ -124,7 +273,7 @@ type UserId struct {
 func (x *UserId) Reset() {
 	*x = UserId{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_goph_keeper_proto_msgTypes[2]
+		mi := &file_proto_goph_keeper_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -137,7 +286,7 @@ func (x *UserId) String() string {
 func (*UserId) ProtoMessage() {}
 
 func (x *UserId) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_goph_keeper_proto_msgTypes[2]
+	mi := &file_proto_goph_keeper_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -150,7 +299,7 @@ func (x *UserId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserId.ProtoReflect.Descriptor instead.
 func (*UserId) Descriptor() ([]byte, []int) {
-	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{2}
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UserId) GetUserID() int64 {
@@ -171,7 +320,7 @@ type LogPassResponse struct {
 func (x *LogPassResponse) Reset() {
 	*x = LogPassResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_goph_keeper_proto_msgTypes[3]
+		mi := &file_proto_goph_keeper_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -184,7 +333,7 @@ func (x *LogPassResponse) String() string {
 func (*LogPassResponse) ProtoMessage() {}
 
 func (x *LogPassResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_goph_keeper_proto_msgTypes[3]
+	mi := &file_proto_goph_keeper_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -197,7 +346,7 @@ func (x *LogPassResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogPassResponse.ProtoReflect.Descriptor instead.
 func (*LogPassResponse) Descriptor() ([]byte, []int) {
-	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{3}
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *LogPassResponse) GetLogPass() []*LogPass {
@@ -219,7 +368,7 @@ type LogPass struct {
 func (x *LogPass) Reset() {
 	*x = LogPass{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_goph_keeper_proto_msgTypes[4]
+		mi := &file_proto_goph_keeper_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -232,7 +381,7 @@ func (x *LogPass) String() string {
 func (*LogPass) ProtoMessage() {}
 
 func (x *LogPass) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_goph_keeper_proto_msgTypes[4]
+	mi := &file_proto_goph_keeper_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +394,7 @@ func (x *LogPass) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogPass.ProtoReflect.Descriptor instead.
 func (*LogPass) Descriptor() ([]byte, []int) {
-	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{4}
+	return file_proto_goph_keeper_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LogPass) GetLogin() string {
@@ -267,23 +416,40 @@ var File_proto_goph_keeper_proto protoreflect.FileDescriptor
 var file_proto_goph_keeper_proto_rawDesc = []byte{
 	0x0a, 0x17, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x70, 0x68, 0x5f, 0x6b, 0x65, 0x65,
 	0x70, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x67, 0x6f, 0x70, 0x68, 0x4b,
-	0x65, 0x65, 0x70, 0x65, 0x72, 0x22, 0x46, 0x0a, 0x12, 0x53, 0x61, 0x76, 0x65, 0x4c, 0x6f, 0x67,
-	0x50, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6c,
-	0x6f, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69,
-	0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x15, 0x0a,
-	0x13, 0x53, 0x61, 0x76, 0x65, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16,
-	0x0a, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06,
-	0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x22, 0x40, 0x0a, 0x0f, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x07, 0x6c, 0x6f, 0x67,
-	0x50, 0x61, 0x73, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x67, 0x6f, 0x70,
-	0x68, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x52,
-	0x07, 0x6c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x22, 0x3b, 0x0a, 0x07, 0x4c, 0x6f, 0x67, 0x50,
-	0x61, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73,
-	0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73,
-	0x73, 0x77, 0x6f, 0x72, 0x64, 0x32, 0x94, 0x01, 0x0a, 0x06, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72,
+	0x65, 0x65, 0x70, 0x65, 0x72, 0x22, 0x3c, 0x0a, 0x08, 0x41, 0x75, 0x74, 0x68, 0x49, 0x6e, 0x66,
+	0x6f, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x22, 0x2b, 0x0a, 0x10, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64,
+	0x22, 0x25, 0x0a, 0x0d, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x46, 0x0a, 0x12, 0x53, 0x61, 0x76, 0x65, 0x4c,
+	0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a,
+	0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f,
+	0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22,
+	0x15, 0x0a, 0x13, 0x53, 0x61, 0x76, 0x65, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64,
+	0x12, 0x16, 0x0a, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x22, 0x40, 0x0a, 0x0f, 0x4c, 0x6f, 0x67, 0x50,
+	0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x07, 0x6c,
+	0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x67,
+	0x6f, 0x70, 0x68, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73,
+	0x73, 0x52, 0x07, 0x6c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x22, 0x3b, 0x0a, 0x07, 0x4c, 0x6f,
+	0x67, 0x50, 0x61, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70,
+	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
+	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x32, 0x92, 0x02, 0x0a, 0x0a, 0x47, 0x6f, 0x70, 0x68,
+	0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x12, 0x3e, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x12, 0x14, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e,
+	0x41, 0x75, 0x74, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x1c, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x4b,
+	0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12,
+	0x14, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x41, 0x75, 0x74,
+	0x68, 0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x19, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x4b, 0x65, 0x65, 0x70,
+	0x65, 0x72, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x4e, 0x0a, 0x0b, 0x53, 0x61, 0x76, 0x65, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x12,
 	0x1e, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x53, 0x61, 0x76,
 	0x65, 0x4c, 0x6f, 0x67, 0x50, 0x61, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
@@ -310,22 +476,29 @@ func file_proto_goph_keeper_proto_rawDescGZIP() []byte {
 	return file_proto_goph_keeper_proto_rawDescData
 }
 
-var file_proto_goph_keeper_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_proto_goph_keeper_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_goph_keeper_proto_goTypes = []interface{}{
-	(*SaveLogPassRequest)(nil),  // 0: gophKeeper.SaveLogPassRequest
-	(*SaveLogPassResponse)(nil), // 1: gophKeeper.SaveLogPassResponse
-	(*UserId)(nil),              // 2: gophKeeper.UserId
-	(*LogPassResponse)(nil),     // 3: gophKeeper.LogPassResponse
-	(*LogPass)(nil),             // 4: gophKeeper.LogPass
+	(*AuthInfo)(nil),            // 0: gophKeeper.AuthInfo
+	(*RegisterResponse)(nil),    // 1: gophKeeper.RegisterResponse
+	(*LoginResponse)(nil),       // 2: gophKeeper.LoginResponse
+	(*SaveLogPassRequest)(nil),  // 3: gophKeeper.SaveLogPassRequest
+	(*SaveLogPassResponse)(nil), // 4: gophKeeper.SaveLogPassResponse
+	(*UserId)(nil),              // 5: gophKeeper.UserId
+	(*LogPassResponse)(nil),     // 6: gophKeeper.LogPassResponse
+	(*LogPass)(nil),             // 7: gophKeeper.LogPass
 }
 var file_proto_goph_keeper_proto_depIdxs = []int32{
-	4, // 0: gophKeeper.LogPassResponse.logPass:type_name -> gophKeeper.LogPass
-	0, // 1: gophKeeper.Keeper.SaveLogPass:input_type -> gophKeeper.SaveLogPassRequest
-	2, // 2: gophKeeper.Keeper.LogPass:input_type -> gophKeeper.UserId
-	1, // 3: gophKeeper.Keeper.SaveLogPass:output_type -> gophKeeper.SaveLogPassResponse
-	3, // 4: gophKeeper.Keeper.LogPass:output_type -> gophKeeper.LogPassResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
+	7, // 0: gophKeeper.LogPassResponse.logPass:type_name -> gophKeeper.LogPass
+	0, // 1: gophKeeper.GophKeeper.Register:input_type -> gophKeeper.AuthInfo
+	0, // 2: gophKeeper.GophKeeper.Login:input_type -> gophKeeper.AuthInfo
+	3, // 3: gophKeeper.GophKeeper.SaveLogPass:input_type -> gophKeeper.SaveLogPassRequest
+	5, // 4: gophKeeper.GophKeeper.LogPass:input_type -> gophKeeper.UserId
+	1, // 5: gophKeeper.GophKeeper.Register:output_type -> gophKeeper.RegisterResponse
+	2, // 6: gophKeeper.GophKeeper.Login:output_type -> gophKeeper.LoginResponse
+	4, // 7: gophKeeper.GophKeeper.SaveLogPass:output_type -> gophKeeper.SaveLogPassResponse
+	6, // 8: gophKeeper.GophKeeper.LogPass:output_type -> gophKeeper.LogPassResponse
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -338,7 +511,7 @@ func file_proto_goph_keeper_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_proto_goph_keeper_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SaveLogPassRequest); i {
+			switch v := v.(*AuthInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -350,7 +523,7 @@ func file_proto_goph_keeper_proto_init() {
 			}
 		}
 		file_proto_goph_keeper_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SaveLogPassResponse); i {
+			switch v := v.(*RegisterResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -362,7 +535,7 @@ func file_proto_goph_keeper_proto_init() {
 			}
 		}
 		file_proto_goph_keeper_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserId); i {
+			switch v := v.(*LoginResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -374,7 +547,7 @@ func file_proto_goph_keeper_proto_init() {
 			}
 		}
 		file_proto_goph_keeper_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LogPassResponse); i {
+			switch v := v.(*SaveLogPassRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -386,6 +559,42 @@ func file_proto_goph_keeper_proto_init() {
 			}
 		}
 		file_proto_goph_keeper_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SaveLogPassResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_goph_keeper_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UserId); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_goph_keeper_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LogPassResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_proto_goph_keeper_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LogPass); i {
 			case 0:
 				return &v.state
@@ -404,7 +613,7 @@ func file_proto_goph_keeper_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_goph_keeper_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

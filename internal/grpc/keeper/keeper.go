@@ -7,8 +7,9 @@ import (
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
 
-	pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
-	pbkeeper "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
+	// pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
+	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -33,7 +34,7 @@ type Keeper interface {
 	CardData(ctx context.Context, id int64) ([]models.Card, error)
 }
 type ServerApi struct {
-	pbauth.UnimplementedAuthServer
+	pb.UnimplementedGophKeeperServer
 	auth   Auth
 	keeper Keeper
 }
@@ -43,15 +44,15 @@ func Register(
 	auth Auth,
 	keeper Keeper,
 ) {
-	pbauth.RegisterAuthServer(srv, &ServerApi{
+	pb.RegisterGophKeeperServer(srv, &ServerApi{
 		auth:   auth,
 		keeper: keeper,
 	})
 }
 
-func (s *ServerApi) Register(ctx context.Context, req *pbauth.RegisterRequest) (*pbauth.RegisterResponse, error) {
+func (s *ServerApi) Register(ctx context.Context, req *pb.AuthInfo) (*pb.RegisterResponse, error) {
 
-	res := pbauth.RegisterResponse{}
+	res := pb.RegisterResponse{}
 
 	if err := validateRegister(req); err != nil {
 		return nil, err
@@ -69,9 +70,9 @@ func (s *ServerApi) Register(ctx context.Context, req *pbauth.RegisterRequest) (
 
 	return &res, nil
 }
-func (s *ServerApi) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbauth.LoginResponse, error) {
+func (s *ServerApi) Login(ctx context.Context, req *pb.AuthInfo) (*pb.LoginResponse, error) {
 
-	res := pbauth.LoginResponse{}
+	res := pb.LoginResponse{}
 
 	err := validateLogin(req)
 	if err != nil {
@@ -94,15 +95,18 @@ func (s *ServerApi) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbaut
 }
 
 // keeper handlers implementation
-func (s *ServerApi) SaveLogPass(ctx context.Context, req *pbkeeper.SaveLogPassRequest) (*pbkeeper.SaveLogPassResponse, error) {
+func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.SaveLogPassRequest) (*pb.SaveLogPassResponse, error) {
+	res := pb.SaveLogPassResponse{}
 
 	lpd := models.LogPassData{}
 	lpd.SetLogin(req.GetLogin())
 	lpd.SetPass(req.GetPassword())
 
-	err := s.keeper.SaveLogPass()
+	// err := s.keeper.SaveLogPass()
+
+	return &res, nil
 }
-func validateLogin(req *pbauth.LoginRequest) error {
+func validateLogin(req *pb.AuthInfo) error {
 
 	if req.GetLogin() == "" {
 		return status.Error(codes.InvalidArgument, "login is required")
@@ -114,7 +118,7 @@ func validateLogin(req *pbauth.LoginRequest) error {
 
 	return nil
 }
-func validateRegister(req *pbauth.RegisterRequest) error {
+func validateRegister(req *pb.AuthInfo) error {
 
 	if req.GetLogin() == "" {
 		return status.Error(codes.InvalidArgument, "login is required")

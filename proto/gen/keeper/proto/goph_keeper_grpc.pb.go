@@ -19,126 +19,200 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Keeper_SaveLogPass_FullMethodName = "/gophKeeper.Keeper/SaveLogPass"
-	Keeper_LogPass_FullMethodName     = "/gophKeeper.Keeper/LogPass"
+	GophKeeper_Register_FullMethodName    = "/gophKeeper.GophKeeper/Register"
+	GophKeeper_Login_FullMethodName       = "/gophKeeper.GophKeeper/Login"
+	GophKeeper_SaveLogPass_FullMethodName = "/gophKeeper.GophKeeper/SaveLogPass"
+	GophKeeper_LogPass_FullMethodName     = "/gophKeeper.GophKeeper/LogPass"
 )
 
-// KeeperClient is the client API for Keeper service.
+// GophKeeperClient is the client API for GophKeeper service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type KeeperClient interface {
+type GophKeeperClient interface {
+	Register(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Login(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*LoginResponse, error)
 	SaveLogPass(ctx context.Context, in *SaveLogPassRequest, opts ...grpc.CallOption) (*SaveLogPassResponse, error)
 	LogPass(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*LogPassResponse, error)
 }
 
-type keeperClient struct {
+type gophKeeperClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewKeeperClient(cc grpc.ClientConnInterface) KeeperClient {
-	return &keeperClient{cc}
+func NewGophKeeperClient(cc grpc.ClientConnInterface) GophKeeperClient {
+	return &gophKeeperClient{cc}
 }
 
-func (c *keeperClient) SaveLogPass(ctx context.Context, in *SaveLogPassRequest, opts ...grpc.CallOption) (*SaveLogPassResponse, error) {
+func (c *gophKeeperClient) Register(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_Register_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) Login(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, GophKeeper_Login_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) SaveLogPass(ctx context.Context, in *SaveLogPassRequest, opts ...grpc.CallOption) (*SaveLogPassResponse, error) {
 	out := new(SaveLogPassResponse)
-	err := c.cc.Invoke(ctx, Keeper_SaveLogPass_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, GophKeeper_SaveLogPass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *keeperClient) LogPass(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*LogPassResponse, error) {
+func (c *gophKeeperClient) LogPass(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*LogPassResponse, error) {
 	out := new(LogPassResponse)
-	err := c.cc.Invoke(ctx, Keeper_LogPass_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, GophKeeper_LogPass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// KeeperServer is the server API for Keeper service.
-// All implementations must embed UnimplementedKeeperServer
+// GophKeeperServer is the server API for GophKeeper service.
+// All implementations must embed UnimplementedGophKeeperServer
 // for forward compatibility
-type KeeperServer interface {
+type GophKeeperServer interface {
+	Register(context.Context, *AuthInfo) (*RegisterResponse, error)
+	Login(context.Context, *AuthInfo) (*LoginResponse, error)
 	SaveLogPass(context.Context, *SaveLogPassRequest) (*SaveLogPassResponse, error)
 	LogPass(context.Context, *UserId) (*LogPassResponse, error)
-	mustEmbedUnimplementedKeeperServer()
+	mustEmbedUnimplementedGophKeeperServer()
 }
 
-// UnimplementedKeeperServer must be embedded to have forward compatible implementations.
-type UnimplementedKeeperServer struct {
+// UnimplementedGophKeeperServer must be embedded to have forward compatible implementations.
+type UnimplementedGophKeeperServer struct {
 }
 
-func (UnimplementedKeeperServer) SaveLogPass(context.Context, *SaveLogPassRequest) (*SaveLogPassResponse, error) {
+func (UnimplementedGophKeeperServer) Register(context.Context, *AuthInfo) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedGophKeeperServer) Login(context.Context, *AuthInfo) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedGophKeeperServer) SaveLogPass(context.Context, *SaveLogPassRequest) (*SaveLogPassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveLogPass not implemented")
 }
-func (UnimplementedKeeperServer) LogPass(context.Context, *UserId) (*LogPassResponse, error) {
+func (UnimplementedGophKeeperServer) LogPass(context.Context, *UserId) (*LogPassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogPass not implemented")
 }
-func (UnimplementedKeeperServer) mustEmbedUnimplementedKeeperServer() {}
+func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
-// UnsafeKeeperServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to KeeperServer will
+// UnsafeGophKeeperServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to GophKeeperServer will
 // result in compilation errors.
-type UnsafeKeeperServer interface {
-	mustEmbedUnimplementedKeeperServer()
+type UnsafeGophKeeperServer interface {
+	mustEmbedUnimplementedGophKeeperServer()
 }
 
-func RegisterKeeperServer(s grpc.ServiceRegistrar, srv KeeperServer) {
-	s.RegisterService(&Keeper_ServiceDesc, srv)
+func RegisterGophKeeperServer(s grpc.ServiceRegistrar, srv GophKeeperServer) {
+	s.RegisterService(&GophKeeper_ServiceDesc, srv)
 }
 
-func _Keeper_SaveLogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GophKeeper_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).Register(ctx, req.(*AuthInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).Login(ctx, req.(*AuthInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_SaveLogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SaveLogPassRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KeeperServer).SaveLogPass(ctx, in)
+		return srv.(GophKeeperServer).SaveLogPass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Keeper_SaveLogPass_FullMethodName,
+		FullMethod: GophKeeper_SaveLogPass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).SaveLogPass(ctx, req.(*SaveLogPassRequest))
+		return srv.(GophKeeperServer).SaveLogPass(ctx, req.(*SaveLogPassRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Keeper_LogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GophKeeper_LogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KeeperServer).LogPass(ctx, in)
+		return srv.(GophKeeperServer).LogPass(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Keeper_LogPass_FullMethodName,
+		FullMethod: GophKeeper_LogPass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).LogPass(ctx, req.(*UserId))
+		return srv.(GophKeeperServer).LogPass(ctx, req.(*UserId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Keeper_ServiceDesc is the grpc.ServiceDesc for Keeper service.
+// GophKeeper_ServiceDesc is the grpc.ServiceDesc for GophKeeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Keeper_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "gophKeeper.Keeper",
-	HandlerType: (*KeeperServer)(nil),
+var GophKeeper_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "gophKeeper.GophKeeper",
+	HandlerType: (*GophKeeperServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Register",
+			Handler:    _GophKeeper_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _GophKeeper_Login_Handler,
+		},
+		{
 			MethodName: "SaveLogPass",
-			Handler:    _Keeper_SaveLogPass_Handler,
+			Handler:    _GophKeeper_SaveLogPass_Handler,
 		},
 		{
 			MethodName: "LogPass",
-			Handler:    _Keeper_LogPass_Handler,
+			Handler:    _GophKeeper_LogPass_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

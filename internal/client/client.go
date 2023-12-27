@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
-	pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
+	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,7 +17,7 @@ import (
 
 type GophClient struct {
 	Ctx    context.Context
-	Client pbauth.AuthClient
+	Client pb.GophKeeperClient
 	Cfg    config.ClientConfig
 	Token  string
 	Log    *slog.Logger
@@ -34,7 +34,7 @@ func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
 		return nil, err
 	}
 
-	client := pbauth.NewAuthClient(conn)
+	client := pb.NewGophKeeperClient(conn)
 
 	pbClient := GophClient{
 		Ctx:    ctx,
@@ -44,7 +44,7 @@ func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
 	return &pbClient, nil
 }
 
-func (g *GophClient) Login() (*pbauth.LoginResponse, error) {
+func (g *GophClient) Login() (*pb.LoginResponse, error) {
 	var (
 		login string
 		pass  string
@@ -54,7 +54,7 @@ func (g *GophClient) Login() (*pbauth.LoginResponse, error) {
 	fmt.Println("enter password")
 	fmt.Scan(&pass)
 
-	req := pbauth.LoginRequest{
+	req := pb.AuthInfo{
 		Login:    login,
 		Password: pass,
 	}
@@ -83,7 +83,7 @@ func (g *GophClient) Login() (*pbauth.LoginResponse, error) {
 	return res, nil
 }
 
-func (g *GophClient) Registert() (*pbauth.RegisterResponse, error) {
+func (g *GophClient) Registert() (*pb.RegisterResponse, error) {
 	var (
 		login string
 		pass1 string
@@ -100,7 +100,7 @@ func (g *GophClient) Registert() (*pbauth.RegisterResponse, error) {
 		return nil, errors.New("passwords not equal")
 	}
 
-	res, err := g.Client.Register(g.Ctx, &pbauth.RegisterRequest{
+	res, err := g.Client.Register(g.Ctx, &pb.AuthInfo{
 		Login:    login,
 		Password: pass1,
 	})
