@@ -5,15 +5,21 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+var servOnce sync.Once
+var ServerCfg ServerConfig
+
 type ServerConfig struct {
-	Env      string   `yaml:"env" env-default:"local"`
-	DBconfig DBconfig `yaml:"dbconfig" env-required:"true"`
-	GRPC     GRPCConfig
+	Env       string        `yaml:"env" env-default:"local"`
+	TokenTTL  time.Duration `yaml:"tokenTTL" env-default:"1h"`
+	SecretKey string        `yaml:"secret" env-required:"true"`
+	DBconfig  DBconfig      `yaml:"dbconfig" env-required:"true"`
+	GRPC      GRPCConfig
 }
 
 type DBconfig struct {
@@ -36,26 +42,33 @@ type GRPCConfig struct {
 
 func MustLoadServCfg() ServerConfig {
 
-	path := filepath.FromSlash(fetchConfigPath())
+	servOnce.Do(func() {
+		path := filepath.FromSlash(fetchConfigPath())
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		panic("config file is not exists: " + path)
-	}
+		MustLoadByPath(path)
+	})
 
-	var serverCfg ServerConfig
-	if err := cleanenv.ReadConfig(path, &serverCfg); err != nil {
-		panic("cannot read config: " + err.Error())
-	}
-
-	return serverCfg
+	return ServerCfg
 
 }
 func fetchConfigPath() string {
-	
+
 	var res string
 
 	flag.StringVar(&res, "cfg", "./config/server.yaml", "path to server config yaml file")
 	flag.Parse()
 
 	return res
+}
+func MustLoadByPath(path string) ServerConfig {
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		panic("config file is not exists: " + path)
+	}
+
+	if err := cleanenv.ReadConfig(path, &ServerCfg); err != nil {
+		panic("cannot read config: " + err.Error())
+	}
+
+	return ServerCfg
 }

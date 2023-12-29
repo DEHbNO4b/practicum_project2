@@ -6,16 +6,14 @@ import (
 	"log/slog"
 	"net"
 
+	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/grpc/keeper"
-	"github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 type App struct {
 	log        *slog.Logger
+	app        models.App
 	gRPCServer *grpc.Server
 	port       int
 }
@@ -25,10 +23,12 @@ func New(
 	authService keeper.Auth,
 	keeperService keeper.Keeper,
 	port int,
+	app models.App,
 
 ) *App {
 
 	srv := grpc.NewServer()
+	// srv := grpc.NewServer(grpc.UnaryInterceptor(unaryInterceptor))
 
 	keeper.Register(
 		srv,
@@ -36,7 +36,7 @@ func New(
 		keeperService,
 	)
 
-	return &App{log: log, gRPCServer: srv, port: port}
+	return &App{log: log, gRPCServer: srv, port: port, app: app}
 }
 
 func (a *App) MustRun() {
@@ -74,21 +74,27 @@ func (a *App) Stop() {
 
 func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
-	var token string
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		values := md.Get("token")
-		if len(values) > 0 {
-			token = values[0]
-		}
-	}
-	if len(token) == 0 {
-		return nil, status.Error(codes.Unauthenticated, "missing token")
-	}
+	fmt.Println("in unary interceptor")
+	// var token string
+	// if md, ok := metadata.FromIncomingContext(ctx); ok {
+	// 	values := md.Get("token")
+	// 	if len(values) > 0 {
+	// 		token = values[0]
+	// 	}
+	// }
+	// if len(token) == 0 {
+	// 	return nil, status.Error(codes.Unauthenticated, "missing token")
+	// }
 
 	// if token != SecretToken {
 	// 	return nil, status.Error(codes.Unauthenticated, "invalid token")
 	// }
 
-	claims, err := jwt.GetClaims(token)
+	// claims, err := jwt.GetClaims(token)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// fmt.Printf("%+v \n", claims)
 	return handler(ctx, req)
 }

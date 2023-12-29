@@ -43,7 +43,7 @@ func New(log *slog.Logger, grpcPort int, dsn string, tokenTTL time.Duration) *Ap
 		storage,
 	)
 
-	grpcApp := *grpcapp.New(log, authService, keeperService, grpcPort)
+	grpcApp := *grpcapp.New(log, authService, keeperService, grpcPort, app)
 
 	return &App{
 		GRPCSrv: &grpcApp,

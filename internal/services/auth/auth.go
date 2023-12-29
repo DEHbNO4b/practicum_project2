@@ -84,7 +84,8 @@ func (a *Auth) Login(ctx context.Context, login string, password string) (string
 
 	// app, err := a.appProvider.App(ctx)
 
-	token, err := jwt.NewToken(user, a.app, a.tokenTTL)
+	// token, err := jwt.NewToken(user, a.app, a.tokenTTL)
+	token, err := jwt.BuildJWTString(user)
 	if err != nil {
 		log.Error("unable to generate token", sl.Err(err))
 		return "", err
