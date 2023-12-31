@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
 
 	myjwt "github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
@@ -115,6 +116,8 @@ func TestSaveLogPass_HappyPath(t *testing.T) {
 
 	token := respLogin.GetToken()
 	require.NotEmpty(t, token)
+
+	fmt.Println("token: ", token)
 
 	err = st.MakeJWTClient(token)
 	require.NoError(t, err)

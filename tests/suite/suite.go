@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
+	myjwt "github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/oauth"
 )
 
 var (
@@ -27,7 +27,7 @@ type Suite struct {
 
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
-	// t.Parallel()
+	t.Parallel()
 
 	cfg := config.MustLoadClientCfg()
 
@@ -69,9 +69,12 @@ func (s *Suite) MakeJWTClient(token string) error {
 
 	cfg := config.MustLoadClientCfg()
 
-	jwtCreds, err := oauth.NewJWTAccessFromKey([]byte(token))
-	if err != nil {
-		return fmt.Errorf("failed to create JWT credentials: %v", err)
+	// jwtCreds, err := oauth.NewJWTAccessFromKey([]byte(token))
+	// if err != nil {
+	// 	return fmt.Errorf("failed to create JWT credentials: %v", err)
+	// }
+	jwtCreds := myjwt.JwtCredentials{
+		Token: token, // Замените переменной актуальным токеном JWT
 	}
 
 	creds, err := credentials.NewClientTLSFromFile(certPath, "localhost")
