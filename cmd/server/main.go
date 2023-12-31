@@ -20,7 +20,10 @@ func main() {
 	log.Info("starting app")
 	log.Info("cfg", slog.Any("", cfg))
 
-	application := app.New(log, cfg.GRPC.Port, cfg.DBconfig.ToString(), cfg.GRPC.Timeout)
+	application, err := app.New(log, cfg.GRPC.Port, cfg.DBconfig.ToString(), cfg.GRPC.Timeout)
+	if err != nil {
+		panic(err)
+	}
 	go application.GRPCSrv.MustRun()
 
 	stop := make(chan os.Signal, 1)

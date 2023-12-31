@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"fmt"
 	"path/filepath"
 	"time"
 
@@ -49,9 +50,12 @@ func GetClaims(token string) (Claims, error) {
 	// 	return claims, errors.New("wrong authorization field")
 	// }
 	// парсим из строки токена tokenString в структуру claims
-	jwt.ParseWithClaims(token, &claims, func(t *jwt.Token) (interface{}, error) {
+	_, err := jwt.ParseWithClaims(token, &claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(confg.SecretKey), nil
 	})
+	if err != nil {
+		return claims, fmt.Errorf("unable to parse token %w", err)
+	}
 
 	// возвращаем ID пользователя в читаемом виде
 	return claims, nil

@@ -2,13 +2,29 @@ package grpcapp
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log/slog"
 	"net"
+	"strings"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
+
+	// pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"github.com/DEHbNO4b/practicum_project2/internal/grpc/keeper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+)
+
+var (
+	ErrMissingMetaData = status.Errorf(codes.InvalidArgument, "missing metadata")
+	ErrInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid token")
+	crtFile            = "./certs/cert.pem"
+	keyFile            = "./certs/key.pem"
 )
 
 type App struct {
@@ -25,10 +41,19 @@ func New(
 	port int,
 	app models.App,
 
-) *App {
+) (*App, error) {
 
-	srv := grpc.NewServer()
-	// srv := grpc.NewServer(grpc.UnaryInterceptor(unaryInterceptor))
+	// srv := grpc.NewServer()
+	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
+	if err != nil {
+		log.Error("failed to load key pair %s", err)
+		return nil, fmt.Errorf("unable to lead key pair from files %w", err)
+	}
+	opts := []grpc.ServerOption{
+		grpc.UnaryInterceptor(unaryInterceptor),
+		grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+	}
+	srv := grpc.NewServer(opts...)
 
 	keeper.Register(
 		srv,
@@ -36,7 +61,7 @@ func New(
 		keeperService,
 	)
 
-	return &App{log: log, gRPCServer: srv, port: port, app: app}
+	return &App{log: log, gRPCServer: srv, port: port, app: app}, nil
 }
 
 func (a *App) MustRun() {
@@ -75,26 +100,42 @@ func (a *App) Stop() {
 func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
 	fmt.Println("in unary interceptor")
-	// var token string
-	// if md, ok := metadata.FromIncomingContext(ctx); ok {
-	// 	values := md.Get("token")
-	// 	if len(values) > 0 {
-	// 		token = values[0]
-	// 	}
-	// }
-	// if len(token) == 0 {
-	// 	return nil, status.Error(codes.Unauthenticated, "missing token")
-	// }
+	fmt.Println(info.FullMethod)
 
-	// if token != SecretToken {
-	// 	return nil, status.Error(codes.Unauthenticated, "invalid token")
-	// }
+	s := strings.Split(info.FullMethod, "/")
 
-	// claims, err := jwt.GetClaims(token)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	if len(s) > 0 {
+		switch s[len(s)-1] {
+		case "Login":
+			return handler(ctx, req)
+		case "Register":
+			return handler(ctx, req)
+		}
+	}
 
-	// fmt.Printf("%+v \n", claims)
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, ErrMissingMetaData
+	}
+
+	if !valid(md["authorization"]) {
+		return nil, ErrInvalidToken
+	}
+
 	return handler(ctx, req)
+}
+
+func valid(auth []string) bool {
+	if len(auth) < 1 {
+		return false
+	}
+	token := strings.TrimPrefix(auth[0], "Bearer ")
+	fmt.Println("got token in req: ", token)
+
+	_, err := jwt.GetClaims(token)
+	if err != nil {
+		return false
+	}
+
+	return true
 }

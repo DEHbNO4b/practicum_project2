@@ -9,7 +9,7 @@ build_server:
 build_client: 
 	GOARCH=amd64 GOOS=windows go build -o . ./cmd/client
 
-run: gen build_server build_client
+run: keys gen build_server build_client
 	./server
 
 build_migrate:
@@ -17,3 +17,13 @@ build_migrate:
 
 migrate: build_migrate
 	./migrator  --migrations-path=./migrations
+
+
+keys:
+	openssl req -newkey rsa:2048 \
+	-new -nodes -x509 \
+	-days 3650 \
+	-out ./certs/cert.pem \
+	-keyout ./certs/key.pem \
+	-addext "subjectAltName = DNS:localhost"  \
+	-subj "/C=US/ST=California/L=Mountain View/O=Your Organization/OU=Your Unit/CN=localhost" 
