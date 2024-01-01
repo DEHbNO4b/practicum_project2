@@ -1,7 +1,5 @@
 package postgres
 
-import "time"
-
 type User struct {
 	Id       int64
 	Login    string
@@ -29,8 +27,8 @@ type BinaryData struct {
 
 type Card struct {
 	UserID int64
-	CardID []rune
-	Pass   int
-	Date   time.Time
+	CardID string
+	Pass   string
+	Date   string
 	Meta   string
 }

@@ -24,6 +24,7 @@ const (
 	GophKeeper_SaveLogPass_FullMethodName = "/gophKeeper.GophKeeper/SaveLogPass"
 	GophKeeper_SaveText_FullMethodName    = "/gophKeeper.GophKeeper/SaveText"
 	GophKeeper_SaveBinary_FullMethodName  = "/gophKeeper.GophKeeper/SaveBinary"
+	GophKeeper_SaveCard_FullMethodName    = "/gophKeeper.GophKeeper/SaveCard"
 	GophKeeper_ShowData_FullMethodName    = "/gophKeeper.GophKeeper/ShowData"
 )
 
@@ -36,6 +37,7 @@ type GophKeeperClient interface {
 	SaveLogPass(ctx context.Context, in *LogPassData, opts ...grpc.CallOption) (*Empty, error)
 	SaveText(ctx context.Context, in *TextData, opts ...grpc.CallOption) (*Empty, error)
 	SaveBinary(ctx context.Context, in *BinaryData, opts ...grpc.CallOption) (*Empty, error)
+	SaveCard(ctx context.Context, in *CardData, opts ...grpc.CallOption) (*Empty, error)
 	ShowData(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Data, error)
 }
 
@@ -92,6 +94,15 @@ func (c *gophKeeperClient) SaveBinary(ctx context.Context, in *BinaryData, opts 
 	return out, nil
 }
 
+func (c *gophKeeperClient) SaveCard(ctx context.Context, in *CardData, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, GophKeeper_SaveCard_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gophKeeperClient) ShowData(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Data, error) {
 	out := new(Data)
 	err := c.cc.Invoke(ctx, GophKeeper_ShowData_FullMethodName, in, out, opts...)
@@ -110,6 +121,7 @@ type GophKeeperServer interface {
 	SaveLogPass(context.Context, *LogPassData) (*Empty, error)
 	SaveText(context.Context, *TextData) (*Empty, error)
 	SaveBinary(context.Context, *BinaryData) (*Empty, error)
+	SaveCard(context.Context, *CardData) (*Empty, error)
 	ShowData(context.Context, *Empty) (*Data, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
@@ -132,6 +144,9 @@ func (UnimplementedGophKeeperServer) SaveText(context.Context, *TextData) (*Empt
 }
 func (UnimplementedGophKeeperServer) SaveBinary(context.Context, *BinaryData) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveBinary not implemented")
+}
+func (UnimplementedGophKeeperServer) SaveCard(context.Context, *CardData) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveCard not implemented")
 }
 func (UnimplementedGophKeeperServer) ShowData(context.Context, *Empty) (*Data, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShowData not implemented")
@@ -239,6 +254,24 @@ func _GophKeeper_SaveBinary_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GophKeeper_SaveCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CardData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).SaveCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_SaveCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).SaveCard(ctx, req.(*CardData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GophKeeper_ShowData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -283,6 +316,10 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveBinary",
 			Handler:    _GophKeeper_SaveBinary_Handler,
+		},
+		{
+			MethodName: "SaveCard",
+			Handler:    _GophKeeper_SaveCard_Handler,
 		},
 		{
 			MethodName: "ShowData",

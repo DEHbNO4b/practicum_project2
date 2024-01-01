@@ -21,6 +21,14 @@ func getRandomTextData() *pb.TextData {
 		Info: gofakeit.Sentence(10),
 	}
 }
+func getRandomCardData() *pb.CardData {
+	return &pb.CardData{
+		CardID: "1234123412341234",
+		Pass:   "123",
+		Date:   "2022/14",
+		Info:   gofakeit.Sentence(10),
+	}
+}
 func getRandomBinaryData(n int) *pb.BinaryData {
 	ans := &pb.BinaryData{} // Инициализируем структуру
 

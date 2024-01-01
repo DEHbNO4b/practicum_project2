@@ -101,13 +101,12 @@ func (s *ServerApi) Login(ctx context.Context, req *pb.AuthInfo) (*pb.LoginRespo
 	return &res, nil
 }
 
-// keeper handlers implementation
+// KEEPER INTERFACE IMPLEMENTATION
+//
 // SaveLogPass is a handle to save log-pass data
-
 func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.LogPassData) (*pb.Empty, error) {
 
 	res := pb.Empty{}
-	// op := "keeper/SaveLogPass"
 	md, _ := metadata.FromIncomingContext(ctx)
 
 	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
@@ -126,7 +125,7 @@ func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.LogPassData) (*pb.E
 	return &res, nil
 }
 
-// SaveLogPass is a handle to save log-pass data
+// SaveText is a handle to save text data
 
 func (s *ServerApi) SaveText(ctx context.Context, req *pb.TextData) (*pb.Empty, error) {
 
@@ -149,8 +148,7 @@ func (s *ServerApi) SaveText(ctx context.Context, req *pb.TextData) (*pb.Empty, 
 	return &res, nil
 }
 
-// SaveBinary is a handle to save log-pass data
-
+// SaveBinary is a handle to save binary data
 func (s *ServerApi) SaveBinary(ctx context.Context, req *pb.BinaryData) (*pb.Empty, error) {
 
 	res := pb.Empty{}
@@ -166,6 +164,31 @@ func (s *ServerApi) SaveBinary(ctx context.Context, req *pb.BinaryData) (*pb.Emp
 
 	err := s.keeper.SaveBinary(ctx, bd)
 	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
+	}
+
+	return &res, nil
+}
+
+// SaveCard is a handle to save card data
+func (s *ServerApi) SaveCard(ctx context.Context, req *pb.CardData) (*pb.Empty, error) {
+
+	res := pb.Empty{}
+
+	md, _ := metadata.FromIncomingContext(ctx)
+
+	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
+
+	cd := models.Card{}
+	cd.SetCardID([]rune(req.GetCardID()))
+	cd.SetPass(req.GetPass())
+	cd.SetDate(req.GetDate())
+	cd.SetMeta(req.GetInfo())
+	cd.SetUserID(claims.UserID)
+
+	err := s.keeper.SaveCard(ctx, cd)
+	if err != nil {
+		s.log.Error("unable to save card data to db", err)
 		return &res, status.Error(codes.Internal, "internal error")
 	}
 

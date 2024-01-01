@@ -12,11 +12,10 @@ service GophKeeper{
     rpc SaveLogPass(LogPassData) returns (Empty);
     rpc SaveText(TextData) returns (Empty);
     rpc SaveBinary(BinaryData) returns (Empty);
+    rpc SaveCard(CardData) returns (Empty);
     
     rpc ShowData(Empty) returns (Data);
 
-    // rpc SaveText(Text)returns();
-    // rpc Text()returns();
 }
 
 message Empty{
@@ -54,12 +53,19 @@ message BinaryData{
     string info=2;
 }
 
+message CardData{
+    string cardID=1;
+    string pass =2;
+    string date=3;
+    string info=4;
 
+}
 
 // Show data messages
 message Data{
     repeated LogPassData lpd=1;
     repeated TextData td=2;
     repeated BinaryData bd=3;
+    repeated CardData cd=4;
 }
 

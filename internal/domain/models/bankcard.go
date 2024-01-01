@@ -2,15 +2,14 @@ package models
 
 import (
 	"errors"
-	"time"
 	"unicode"
 )
 
 type Card struct {
 	userID int64
 	cardID []rune
-	pass   int
-	date   time.Time
+	pass   string
+	date   string
 	meta   string
 }
 
@@ -34,18 +33,22 @@ func (c *Card) SetCardID(id []rune) error {
 	return nil
 }
 
-func (c *Card) SetPass(pass int) error {
+func (c *Card) SetPass(pass string) error {
 
-	if pass <= 0 || pass >= 1000 {
-		return errors.New("wrong card password")
+	if len(pass) != 3 {
+		return errors.New("wrong card password len")
 	}
-
+	for i := 0; i < len(pass); i++ {
+		if !unicode.IsDigit(rune(pass[i])) {
+			return errors.New("wrong id")
+		}
+	}
 	c.pass = pass
 
 	return nil
 }
 
-func (c *Card) SetDate(date time.Time) {
+func (c *Card) SetDate(date string) {
 	c.date = date
 }
 
@@ -61,11 +64,11 @@ func (c *Card) CardID() []rune {
 	return c.cardID
 }
 
-func (c *Card) Pass() int {
+func (c *Card) Pass() string {
 	return c.pass
 }
 
-func (c *Card) Date() time.Time {
+func (c *Card) Date() string {
 	return c.date
 }
 

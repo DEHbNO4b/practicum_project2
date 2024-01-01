@@ -97,7 +97,7 @@ func cardToDomain(c Card) (models.Card, error) {
 	cd := models.Card{}
 
 	cd.SetUserID(c.UserID)
-	err := cd.SetCardID(c.CardID)
+	err := cd.SetCardID([]rune(c.CardID))
 	if err != nil {
 		return cd, err
 	}
@@ -115,7 +115,7 @@ func domainCardToLocal(cd models.Card) Card {
 	c := Card{}
 
 	c.UserID = cd.UserID()
-	c.CardID = cd.CardID()
+	c.CardID = string(cd.CardID())
 	c.Date = cd.Date()
 	c.Pass = cd.Pass()
 	c.Meta = cd.Meta()

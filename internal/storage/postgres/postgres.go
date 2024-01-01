@@ -262,6 +262,7 @@ func (s *Storage) SaveCard(ctx context.Context, cd models.Card) error {
 	)
 	if err != nil {
 		return fmt.Errorf("%s %w", op, err)
+
 	}
 
 	return nil

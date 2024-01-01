@@ -6,25 +6,25 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX if NOT EXISTS idx_login ON users(login);
 
 CREATE TABLE IF NOT EXISTS logpass_data (
-    user_id integer,
+    user_id integer NOT NULL,
     login varchar(150) NOT NULL,
     pass varchar(150) NOT NULL,
     meta text
 );
 CREATE TABLE IF NOT EXISTS text_data (
-    user_id integer,
-    text text,
+    user_id integer NOT NULL,
+    text text NOT NULL,
     meta text
 );
 CREATE TABLE IF NOT EXISTS binary_data (
-    user_id integer,
-    data bytea ,
+    user_id integer NOT NULL,
+    data bytea NOT NULL,
     meta text
 );
 CREATE TABLE IF NOT EXISTS card_data (
-    user_id integer,
-    card_id varchar(16),
-    pass varchar(3),
-    date timestamp    ,
+    user_id integer NOT NULL,
+    card_id varchar(16) NOT NULL,
+    pass varchar(3) NOT NULL,
+    date varchar(10) NOT NULL,
     meta text
 );
