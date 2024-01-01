@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
@@ -34,17 +35,20 @@ type Keeper interface {
 	CardData(ctx context.Context, id int64) ([]models.Card, error)
 }
 type ServerApi struct {
+	log *slog.Logger
 	pb.UnimplementedGophKeeperServer
 	auth   Auth
 	keeper Keeper
 }
 
 func Register(
+	log *slog.Logger,
 	srv *grpc.Server,
 	auth Auth,
 	keeper Keeper,
 ) {
 	pb.RegisterGophKeeperServer(srv, &ServerApi{
+		log:    log,
 		auth:   auth,
 		keeper: keeper,
 	})
@@ -96,13 +100,23 @@ func (s *ServerApi) Login(ctx context.Context, req *pb.AuthInfo) (*pb.LoginRespo
 
 // keeper handlers implementation
 func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.SaveLogPassRequest) (*pb.SaveLogPassResponse, error) {
+
+	op := "keeper/SaveLogPass"
+
+	log := s.log.With(slog.String("op", op))
+
+	log.Info("attemting to save log-pass data")
+
 	res := pb.SaveLogPassResponse{}
 
 	lpd := models.LogPassData{}
 	lpd.SetLogin(req.GetLogin())
 	lpd.SetPass(req.GetPassword())
 
-	// err := s.keeper.SaveLogPass()
+	err := s.keeper.SaveLogPass(ctx, lpd)
+	if err != nil {
+		return &res, err
+	}
 
 	return &res, nil
 }

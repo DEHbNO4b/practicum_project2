@@ -19,11 +19,5 @@ migrate: build_migrate
 	./migrator  --migrations-path=./migrations
 
 
-keys:
-	openssl req -newkey rsa:2048 \
-	-new -nodes -x509 \
-	-days 3650 \
-	-out ./certs/cert.pem \
-	-keyout ./certs/key.pem \
-	-addext "subjectAltName = DNS:localhost"  \
-	-subj "/C=US/ST=California/L=Mountain View/O=Your Organization/OU=Your Unit/CN=localhost" 
+keys: 
+	go run ./cmd/cert/main.go

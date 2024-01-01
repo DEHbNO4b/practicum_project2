@@ -1,122 +1,196 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"math/big"
-	"net"
-	"os"
 	"time"
 )
 
-var (
-	caCertPath = "./certs/caCert.pem"
-	caKeyPath  = "./certs/caKey.pem"
+const (
+	caKeyPath      = "./certs/ca_key.pem"
+	caCertPath     = "./certs/ca_cert.pem"
+	serverKeyPath  = "./certs/server_key.pem"
+	serverCertPath = "./certs/server_cert.pem"
+	clientKeyPath  = "./certs/client_key.pem"
+	clientCertPath = "./certs/client_cert.pem"
+	keyBitSize     = 2048
+	validityPeriod = 365 * 24 * time.Hour // 1 year
+	org            = "ExampleCorp"
+	orgUnit        = "IT"
+	country        = "RU"
+	state          = "Moscow"
+	locality       = "Moscow"
+	hostnameServer = "server.example.com"
+	hostnameClient = "client.example.com"
 )
 
-// Шаблон сертификата
-var certTemplate = &x509.Certificate{
-	// указываем уникальный номер сертификата
-	SerialNumber: big.NewInt(1658),
-	// заполняем базовую информацию о владельце сертификата
-	Subject: pkix.Name{
-		Country:      []string{"RU"},
-		Locality:     []string{"Nalchik"},
-		Organization: []string{"Yandex.Praktikum"},
-	},
-	// разрешаем использование сертификата для 127.0.0.1 и ::1
-	IPAddresses: []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
-	// сертификат верен, начиная со времени создания
-	NotBefore: time.Now(),
-	// время жизни сертификата — 10 лет
-	NotAfter:     time.Now().AddDate(10, 0, 0),
-	SubjectKeyId: []byte{1, 2, 3, 4, 6},
-	// устанавливаем использование ключа для цифровой подписи,
-	// а также клиентской и серверной авторизации
-	ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-	KeyUsage:    x509.KeyUsageDigitalSignature,
-}
-
 func main() {
+	createRootCert()
 
-	caCert, caKey, err := createCert(certTemplate, certTemplate)
-	if err != nil {
-		panic(err)
+	privServer := createPrivateKey()
+	createServerCert(privServer)
+
+	privClient := createPrivateKey()
+	createClientCert(privClient)
+}
+
+func createRootCert() {
+	caPrivKey := createPrivateKey()
+
+	caTemplate := &x509.Certificate{
+		SerialNumber:          serialNumber(),
+		Subject:               pkixName(org, orgUnit, country, state, locality, hostnameServer),
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(validityPeriod),
+		BasicConstraintsValid: true,
+		IsCA:                  true,
+		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment | x509.KeyUsageKeyAgreement,
 	}
 
-	err = writeFile(caCertPath, caCert.Bytes())
+	caCert, err := x509.CreateCertificate(rand.Reader, caTemplate, caTemplate, caPrivKey.Public(), caPrivKey)
 	if err != nil {
-		panic(err)
-	}
-	err = writeFile(caKeyPath, caKey.Bytes())
-	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	ca, err := tls.LoadX509KeyPair(caCertPath, caKeyPath)
+	saveCertAndKey(caCertPath, pemCert(caCert))
+	saveCertAndKey(caKeyPath, pemPrivateKey(caPrivKey))
 
-	srvCert, srvKey, err := createCert(certTemplate, ca)
-	if err != nil {
-		panic(err)
-	}
-	kfile, err := os.OpenFile("./certs/key.pem", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer kfile.Close()
+	fmt.Println("Создан корневой сертификат")
+}
 
-	_, err = kfile.Write(privateKeyPEM.Bytes())
+func createServerCert(privKey *rsa.PrivateKey) {
+	caCert, caKey := loadCertAndKey(caCertPath, caKeyPath)
+
+	serverTemplate := &x509.Certificate{
+		SerialNumber:          serialNumber(),
+		Subject:               pkixName(org, orgUnit, country, state, locality, hostnameServer),
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(validityPeriod),
+		BasicConstraintsValid: true,
+		IsCA:                  false,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
+		DNSNames:              []string{hostnameServer},
+	}
+
+	serverCert, err := x509.CreateCertificate(rand.Reader, serverTemplate, caCert, privKey.Public(), caKey)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+
+	saveCertAndKey(serverCertPath, pemCert(serverCert))
+	saveCertAndKey(serverKeyPath, pemPrivateKey(privKey))
+
+	fmt.Println("Создан сертификат сервера")
+}
+
+func createClientCert(privKey *rsa.PrivateKey) {
+	caCert, caKey := loadCertAndKey(caCertPath, caKeyPath)
+
+	clientTemplate := &x509.Certificate{
+		SerialNumber:          serialNumber(),
+		Subject:               pkixName(org, orgUnit, country, state, locality, hostnameClient),
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().Add(validityPeriod),
+		BasicConstraintsValid: true,
+		IsCA:                  false,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
+		DNSNames:              []string{hostnameClient},
+	}
+
+	clientCert, err := x509.CreateCertificate(rand.Reader, clientTemplate, caCert, privKey.Public(), caKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	saveCertAndKey(clientCertPath, pemCert(clientCert))
+	saveCertAndKey(clientKeyPath, pemPrivateKey(privKey))
+
+	fmt.Println("Создан сертификат клиента")
+}
+
+func createPrivateKey() *rsa.PrivateKey {
+	privKey, err := rsa.GenerateKey(rand.Reader, keyBitSize)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return privKey
+}
+
+func saveCertAndKey(path string, data []byte) {
+	err := ioutil.WriteFile(path, data, 0600)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
-func createCert(template, parent *x509.Certificate) (bytes.Buffer, bytes.Buffer, error) {
-	// используется rand.Reader в качестве источника случайных данных
-	privateKey, err := rsa.GenerateKey(rand.Reader, 4096)
+func loadCertAndKey(certPath, keyPath string) (*x509.Certificate, *rsa.PrivateKey) {
+	certBytes, err := ioutil.ReadFile(certPath)
 	if err != nil {
-		return bytes.Buffer{}, bytes.Buffer{}, err
+		log.Fatal(err)
 	}
 
-	// создаём сертификат x.509
-	certBytes, err := x509.CreateCertificate(rand.Reader, template, parent, &privateKey.PublicKey, privateKey)
+	keyBytes, err := ioutil.ReadFile(keyPath)
 	if err != nil {
-		return bytes.Buffer{}, bytes.Buffer{}, err
+		log.Fatal(err)
 	}
 
-	// кодируем сертификат и ключ в формате PEM, который
-	// используется для хранения и обмена криптографическими ключами
-	var certPEM bytes.Buffer
-	pem.Encode(&certPEM, &pem.Block{
+	certBlock, _ := pem.Decode(certBytes)
+	cert, err := x509.ParseCertificate(certBlock.Bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	keyBlock, _ := pem.Decode(keyBytes)
+	privKey, err := x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return cert, privKey
+}
+
+func pemCert(cert []byte) []byte {
+	return pem.EncodeToMemory(&pem.Block{
 		Type:  "CERTIFICATE",
-		Bytes: certBytes,
+		Bytes: cert,
 	})
-
-	var privateKeyPEM bytes.Buffer
-	pem.Encode(&privateKeyPEM, &pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
-	})
-	return certPEM, privateKeyPEM, nil
 }
 
-func writeFile(path string, data []byte) error {
-	// file, err := os.OpenFile("./certs/ca.pem", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 664)
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 664)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+func pemPrivateKey(privKey *rsa.PrivateKey) []byte {
+	privBytes := x509.MarshalPKCS1PrivateKey(privKey)
+	return pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: privBytes,
+	})
+}
 
-	_, err = file.Write(data)
+func serialNumber() *big.Int {
+	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
+	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+	return serialNumber
+}
 
-	return nil
+func pkixName(org, orgUnit, country, state, locality, commonName string) pkix.Name {
+	return pkix.Name{
+		CommonName:         commonName,
+		SerialNumber:       "1",
+		Organization:       []string{org},
+		Country:            []string{country},
+		Province:           []string{state},
+		Locality:           []string{locality},
+		OrganizationalUnit: []string{orgUnit},
+	}
 }

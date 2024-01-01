@@ -23,8 +23,8 @@ import (
 var (
 	ErrMissingMetaData = status.Errorf(codes.InvalidArgument, "missing metadata")
 	ErrInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid token")
-	crtFile            = "./certs/cert.pem"
-	keyFile            = "./certs/key.pem"
+	crtFile            = "./certs/sever_cert.pem"
+	keyFile            = "./certs/server_key.pem"
 )
 
 type App struct {
@@ -56,6 +56,7 @@ func New(
 	srv := grpc.NewServer(opts...)
 
 	keeper.Register(
+		log,
 		srv,
 		authService,
 		keeperService,
@@ -99,8 +100,7 @@ func (a *App) Stop() {
 
 func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
-	fmt.Println("in unary interceptor")
-	fmt.Println(info.FullMethod)
+	fmt.Println("in unary interceptor:", info.FullMethod)
 
 	s := strings.Split(info.FullMethod, "/")
 
@@ -126,16 +126,14 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 }
 
 func valid(auth []string) bool {
+
 	if len(auth) < 1 {
 		return false
 	}
+
 	token := strings.TrimPrefix(auth[0], "Bearer ")
-	fmt.Println("got token in req: ", token)
 
 	_, err := jwt.GetClaims(token)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
