@@ -7,9 +7,9 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -22,13 +22,13 @@ const (
 	clientCertPath = "./certs/client_cert.pem"
 	keyBitSize     = 2048
 	validityPeriod = 365 * 24 * time.Hour // 1 year
-	org            = "ExampleCorp"
-	orgUnit        = "IT"
+	org            = "YandexPracticum"
+	orgUnit        = "Golang20"
 	country        = "RU"
-	state          = "Moscow"
-	locality       = "Moscow"
-	hostnameServer = "server.example.com"
-	hostnameClient = "client.example.com"
+	state          = "KBR"
+	locality       = "Nalchik"
+	hostnameServer = "localhost"
+	hostnameClient = "localhost"
 )
 
 func main() {
@@ -127,19 +127,19 @@ func createPrivateKey() *rsa.PrivateKey {
 }
 
 func saveCertAndKey(path string, data []byte) {
-	err := ioutil.WriteFile(path, data, 0600)
+	err := os.WriteFile(path, data, 0600)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func loadCertAndKey(certPath, keyPath string) (*x509.Certificate, *rsa.PrivateKey) {
-	certBytes, err := ioutil.ReadFile(certPath)
+	certBytes, err := os.ReadFile(certPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	keyBytes, err := ioutil.ReadFile(keyPath)
+	keyBytes, err := os.ReadFile(keyPath)
 	if err != nil {
 		log.Fatal(err)
 	}

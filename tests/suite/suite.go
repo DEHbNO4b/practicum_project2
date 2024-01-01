@@ -2,7 +2,10 @@ package suite
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"os"
 	"strconv"
 	"testing"
 
@@ -14,7 +17,10 @@ import (
 )
 
 var (
-	certPath = "../certs/cert.pem"
+	hostname = "localhost"
+	crtFile  = "../certs/client_cert.pem"
+	keyFile  = "../certs/client_key.pem"
+	caFile   = "../certs/ca_cert.pem"
 )
 
 type Suite struct {
@@ -38,13 +44,28 @@ func New(t *testing.T) (context.Context, *Suite) {
 		cancel()
 	})
 
-	creds, err := credentials.NewClientTLSFromFile(certPath, "localhost")
+	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
 	if err != nil {
-		t.Fatalf("unable to read certFile %v", err)
+		t.Fatalf("unable to load client key pair %v", err)
+	}
+
+	certPool := x509.NewCertPool()
+
+	ca, err := os.ReadFile(caFile)
+	if err != nil {
+		t.Fatalf("unable to load ca certificate %v", err)
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		t.Fatalf("unable to append ca certs %v", err)
 	}
 
 	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(creds),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			ServerName:   hostname,
+			Certificates: []tls.Certificate{cert},
+			RootCAs:      certPool,
+		})),
 	}
 	conn, err := grpc.DialContext(
 		ctx,
@@ -69,22 +90,32 @@ func (s *Suite) MakeJWTClient(token string) error {
 
 	cfg := config.MustLoadClientCfg()
 
-	// jwtCreds, err := oauth.NewJWTAccessFromKey([]byte(token))
-	// if err != nil {
-	// 	return fmt.Errorf("failed to create JWT credentials: %v", err)
-	// }
 	jwtCreds := myjwt.JwtCredentials{
-		Token: token, // Замените переменной актуальным токеном JWT
+		Token: token,
 	}
 
-	creds, err := credentials.NewClientTLSFromFile(certPath, "localhost")
+	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
 	if err != nil {
+		return err
+	}
+	certPool := x509.NewCertPool()
+
+	ca, err := os.ReadFile(caFile)
+	if err != nil {
+		return err
+	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
 		return err
 	}
 
 	opts := []grpc.DialOption{
 		grpc.WithPerRPCCredentials(jwtCreds),
-		grpc.WithTransportCredentials(creds),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			ServerName:   hostname,
+			Certificates: []tls.Certificate{cert},
+			RootCAs:      certPool,
+		})),
 	}
 
 	conn, err := grpc.DialContext(

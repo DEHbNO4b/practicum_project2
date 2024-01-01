@@ -3,9 +3,11 @@ package grpcapp
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log/slog"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
@@ -23,8 +25,9 @@ import (
 var (
 	ErrMissingMetaData = status.Errorf(codes.InvalidArgument, "missing metadata")
 	ErrInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid token")
-	crtFile            = "./certs/sever_cert.pem"
+	crtFile            = "./certs/server_cert.pem"
 	keyFile            = "./certs/server_key.pem"
+	caFile             = "./certs/ca_cert.pem"
 )
 
 type App struct {
@@ -49,10 +52,28 @@ func New(
 		log.Error("failed to load key pair %s", err)
 		return nil, fmt.Errorf("unable to lead key pair from files %w", err)
 	}
-	opts := []grpc.ServerOption{
-		grpc.UnaryInterceptor(unaryInterceptor),
-		grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+
+	certPool := x509.NewCertPool()
+
+	ca, err := os.ReadFile(caFile)
+	if err != nil {
+		return nil, fmt.Errorf("unable to read ca_cert file %w", err)
 	}
+
+	if ok := certPool.AppendCertsFromPEM(ca); !ok {
+		return nil, fmt.Errorf("unable to append ca certificate %w", err)
+	}
+
+	opts := []grpc.ServerOption{
+		// grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+		grpc.Creds(credentials.NewTLS(&tls.Config{
+			ClientAuth:   tls.RequireAndVerifyClientCert,
+			Certificates: []tls.Certificate{cert},
+			ClientCAs:    certPool,
+		})),
+		grpc.UnaryInterceptor(unaryInterceptor),
+	}
+
 	srv := grpc.NewServer(opts...)
 
 	keeper.Register(
