@@ -13,7 +13,6 @@ import (
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 
-	// pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"github.com/DEHbNO4b/practicum_project2/internal/grpc/keeper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -46,7 +45,6 @@ func New(
 
 ) (*App, error) {
 
-	// srv := grpc.NewServer()
 	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
 	if err != nil {
 		log.Error("failed to load key pair %s", err)
@@ -65,12 +63,13 @@ func New(
 	}
 
 	opts := []grpc.ServerOption{
-		// grpc.Creds(credentials.NewServerTLSFromCert(&cert)),
+
 		grpc.Creds(credentials.NewTLS(&tls.Config{
 			ClientAuth:   tls.RequireAndVerifyClientCert,
 			Certificates: []tls.Certificate{cert},
 			ClientCAs:    certPool,
 		})),
+
 		grpc.UnaryInterceptor(unaryInterceptor),
 	}
 

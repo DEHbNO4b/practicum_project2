@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
@@ -15,18 +16,19 @@ import (
 )
 
 type Storage struct {
+	log  *slog.Logger
 	db   *sql.DB
 	once *sync.Once
 }
 
-func New(storagePath string) (*Storage, error) {
+func New(log *slog.Logger, storagePath string) (*Storage, error) {
 	const op = "storage.postgres.New"
 
 	db, err := sql.Open("pgx", storagePath)
 	if err != nil {
 		return nil, fmt.Errorf("%s %w", op, err)
 	}
-	return &Storage{db: db}, nil
+	return &Storage{log: log, db: db}, nil
 }
 
 // UserSaver interface implementation
@@ -87,6 +89,9 @@ func (s *Storage) User(ctx context.Context, login string) (models.User, error) {
 func (s *Storage) SaveLogPass(ctx context.Context, lp models.LogPassData) error {
 
 	op := "storage.postgres.SetLogPass"
+	log := s.log.With(slog.String("op", op))
+
+	log.Info("attemting to save log-pass data")
 
 	local := domainLpToLocal(lp)
 
@@ -95,7 +100,7 @@ func (s *Storage) SaveLogPass(ctx context.Context, lp models.LogPassData) error 
 		local.UserID, local.Login, local.Pass, local.Meta,
 	)
 	if err != nil {
-		return fmt.Errorf("%s %w", op, err)
+		return fmt.Errorf("unable to save log-pass data in DB -%s: %w", op, err)
 	}
 	return nil
 

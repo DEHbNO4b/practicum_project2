@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 	"github.com/DEHbNO4b/practicum_project2/internal/services/auth"
 
 	// pbauth "github.com/DEHbNO4b/practicum_project2/proto/gen/auth/proto"
@@ -13,6 +15,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -99,48 +102,77 @@ func (s *ServerApi) Login(ctx context.Context, req *pb.AuthInfo) (*pb.LoginRespo
 }
 
 // keeper handlers implementation
-func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.SaveLogPassRequest) (*pb.SaveLogPassResponse, error) {
+// SaveLogPass is a handle to save log-pass data
 
-	op := "keeper/SaveLogPass"
+func (s *ServerApi) SaveLogPass(ctx context.Context, req *pb.LogPassData) (*pb.Empty, error) {
 
-	log := s.log.With(slog.String("op", op))
+	res := pb.Empty{}
+	// op := "keeper/SaveLogPass"
+	md, _ := metadata.FromIncomingContext(ctx)
 
-	log.Info("attemting to save log-pass data")
-
-	res := pb.SaveLogPassResponse{}
+	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
 
 	lpd := models.LogPassData{}
 	lpd.SetLogin(req.GetLogin())
 	lpd.SetPass(req.GetPassword())
+	lpd.SetMeta(req.GetInfo())
+	lpd.SetUserID(claims.UserID)
 
 	err := s.keeper.SaveLogPass(ctx, lpd)
 	if err != nil {
-		return &res, err
+		return &res, status.Error(codes.Internal, "internal error")
 	}
 
 	return &res, nil
 }
-func validateLogin(req *pb.AuthInfo) error {
 
-	if req.GetLogin() == "" {
-		return status.Error(codes.InvalidArgument, "login is required")
+// SaveLogPass is a handle to save log-pass data
+
+func (s *ServerApi) SaveText(ctx context.Context, req *pb.TextData) (*pb.Empty, error) {
+
+	res := pb.Empty{}
+
+	md, _ := metadata.FromIncomingContext(ctx)
+
+	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
+
+	td := models.TextData{}
+	td.SetText(req.GetText())
+	td.SetMeta(req.GetInfo())
+	td.SetUserID(claims.UserID)
+
+	err := s.keeper.SaveText(ctx, td)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
 	}
 
-	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "password is required")
-	}
-
-	return nil
+	return &res, nil
 }
-func validateRegister(req *pb.AuthInfo) error {
 
-	if req.GetLogin() == "" {
-		return status.Error(codes.InvalidArgument, "login is required")
+func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, error) {
+
+	res := pb.Data{}
+
+	md, _ := metadata.FromIncomingContext(ctx)
+
+	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
+
+	lpd, err := s.keeper.LogPass(ctx, claims.UserID)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
 	}
 
-	if req.GetPassword() == "" {
-		return status.Error(codes.InvalidArgument, "password is required")
+	for _, el := range lpd {
+		res.Lpd = append(res.Lpd, domainLogPassToProto(el))
 	}
 
-	return nil
+	td, err := s.keeper.TextData(ctx, claims.UserID)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
+	}
+	for _, el := range td {
+		res.Td = append(res.Td, domainTextToProto(el))
+	}
+
+	return &res, nil
 }

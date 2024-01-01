@@ -22,7 +22,8 @@ const (
 	GophKeeper_Register_FullMethodName    = "/gophKeeper.GophKeeper/Register"
 	GophKeeper_Login_FullMethodName       = "/gophKeeper.GophKeeper/Login"
 	GophKeeper_SaveLogPass_FullMethodName = "/gophKeeper.GophKeeper/SaveLogPass"
-	GophKeeper_LogPass_FullMethodName     = "/gophKeeper.GophKeeper/LogPass"
+	GophKeeper_SaveText_FullMethodName    = "/gophKeeper.GophKeeper/SaveText"
+	GophKeeper_ShowData_FullMethodName    = "/gophKeeper.GophKeeper/ShowData"
 )
 
 // GophKeeperClient is the client API for GophKeeper service.
@@ -31,8 +32,9 @@ const (
 type GophKeeperClient interface {
 	Register(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *AuthInfo, opts ...grpc.CallOption) (*LoginResponse, error)
-	SaveLogPass(ctx context.Context, in *SaveLogPassRequest, opts ...grpc.CallOption) (*SaveLogPassResponse, error)
-	LogPass(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*LogPassResponse, error)
+	SaveLogPass(ctx context.Context, in *LogPassData, opts ...grpc.CallOption) (*Empty, error)
+	SaveText(ctx context.Context, in *TextData, opts ...grpc.CallOption) (*Empty, error)
+	ShowData(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Data, error)
 }
 
 type gophKeeperClient struct {
@@ -61,8 +63,8 @@ func (c *gophKeeperClient) Login(ctx context.Context, in *AuthInfo, opts ...grpc
 	return out, nil
 }
 
-func (c *gophKeeperClient) SaveLogPass(ctx context.Context, in *SaveLogPassRequest, opts ...grpc.CallOption) (*SaveLogPassResponse, error) {
-	out := new(SaveLogPassResponse)
+func (c *gophKeeperClient) SaveLogPass(ctx context.Context, in *LogPassData, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
 	err := c.cc.Invoke(ctx, GophKeeper_SaveLogPass_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,9 +72,18 @@ func (c *gophKeeperClient) SaveLogPass(ctx context.Context, in *SaveLogPassReque
 	return out, nil
 }
 
-func (c *gophKeeperClient) LogPass(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*LogPassResponse, error) {
-	out := new(LogPassResponse)
-	err := c.cc.Invoke(ctx, GophKeeper_LogPass_FullMethodName, in, out, opts...)
+func (c *gophKeeperClient) SaveText(ctx context.Context, in *TextData, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, GophKeeper_SaveText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gophKeeperClient) ShowData(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Data, error) {
+	out := new(Data)
+	err := c.cc.Invoke(ctx, GophKeeper_ShowData_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +96,9 @@ func (c *gophKeeperClient) LogPass(ctx context.Context, in *UserId, opts ...grpc
 type GophKeeperServer interface {
 	Register(context.Context, *AuthInfo) (*RegisterResponse, error)
 	Login(context.Context, *AuthInfo) (*LoginResponse, error)
-	SaveLogPass(context.Context, *SaveLogPassRequest) (*SaveLogPassResponse, error)
-	LogPass(context.Context, *UserId) (*LogPassResponse, error)
+	SaveLogPass(context.Context, *LogPassData) (*Empty, error)
+	SaveText(context.Context, *TextData) (*Empty, error)
+	ShowData(context.Context, *Empty) (*Data, error)
 	mustEmbedUnimplementedGophKeeperServer()
 }
 
@@ -100,11 +112,14 @@ func (UnimplementedGophKeeperServer) Register(context.Context, *AuthInfo) (*Regi
 func (UnimplementedGophKeeperServer) Login(context.Context, *AuthInfo) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedGophKeeperServer) SaveLogPass(context.Context, *SaveLogPassRequest) (*SaveLogPassResponse, error) {
+func (UnimplementedGophKeeperServer) SaveLogPass(context.Context, *LogPassData) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveLogPass not implemented")
 }
-func (UnimplementedGophKeeperServer) LogPass(context.Context, *UserId) (*LogPassResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LogPass not implemented")
+func (UnimplementedGophKeeperServer) SaveText(context.Context, *TextData) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveText not implemented")
+}
+func (UnimplementedGophKeeperServer) ShowData(context.Context, *Empty) (*Data, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShowData not implemented")
 }
 func (UnimplementedGophKeeperServer) mustEmbedUnimplementedGophKeeperServer() {}
 
@@ -156,7 +171,7 @@ func _GophKeeper_Login_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _GophKeeper_SaveLogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveLogPassRequest)
+	in := new(LogPassData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -168,25 +183,43 @@ func _GophKeeper_SaveLogPass_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: GophKeeper_SaveLogPass_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GophKeeperServer).SaveLogPass(ctx, req.(*SaveLogPassRequest))
+		return srv.(GophKeeperServer).SaveLogPass(ctx, req.(*LogPassData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GophKeeper_LogPass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserId)
+func _GophKeeper_SaveText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TextData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GophKeeperServer).LogPass(ctx, in)
+		return srv.(GophKeeperServer).SaveText(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GophKeeper_LogPass_FullMethodName,
+		FullMethod: GophKeeper_SaveText_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GophKeeperServer).LogPass(ctx, req.(*UserId))
+		return srv.(GophKeeperServer).SaveText(ctx, req.(*TextData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GophKeeper_ShowData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GophKeeperServer).ShowData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GophKeeper_ShowData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GophKeeperServer).ShowData(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -211,8 +244,12 @@ var GophKeeper_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GophKeeper_SaveLogPass_Handler,
 		},
 		{
-			MethodName: "LogPass",
-			Handler:    _GophKeeper_LogPass_Handler,
+			MethodName: "SaveText",
+			Handler:    _GophKeeper_SaveText_Handler,
+		},
+		{
+			MethodName: "ShowData",
+			Handler:    _GophKeeper_ShowData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
