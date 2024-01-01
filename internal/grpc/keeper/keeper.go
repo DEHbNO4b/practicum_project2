@@ -195,6 +195,7 @@ func (s *ServerApi) SaveCard(ctx context.Context, req *pb.CardData) (*pb.Empty, 
 	return &res, nil
 }
 
+// ShowData is a handle to show all data types
 func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, error) {
 
 	res := pb.Data{}
@@ -203,6 +204,7 @@ func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, erro
 
 	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
 
+	// get log-pass data from keeper
 	lpd, err := s.keeper.LogPass(ctx, claims.UserID)
 	if err != nil {
 		return &res, status.Error(codes.Internal, "internal error")
@@ -212,6 +214,7 @@ func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, erro
 		res.Lpd = append(res.Lpd, domainLogPassToProto(el))
 	}
 
+	// Get text data from keeper
 	td, err := s.keeper.TextData(ctx, claims.UserID)
 	if err != nil {
 		return &res, status.Error(codes.Internal, "internal error")
@@ -219,12 +222,23 @@ func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, erro
 	for _, el := range td {
 		res.Td = append(res.Td, domainTextToProto(el))
 	}
+
+	// Get binary data from keeper
 	bd, err := s.keeper.BinaryData(ctx, claims.UserID)
 	if err != nil {
 		return &res, status.Error(codes.Internal, "internal error")
 	}
 	for _, el := range bd {
 		res.Bd = append(res.Bd, domainBinaryToProto(el))
+	}
+
+	// Get binary data from keeper
+	cd, err := s.keeper.CardData(ctx, claims.UserID)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
+	}
+	for _, el := range cd {
+		res.Cd = append(res.Cd, domainCardToProto(el))
 	}
 
 	return &res, nil

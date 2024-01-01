@@ -57,6 +57,14 @@ func TestShowData_HappyPath(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
+	_, err = st.JWTClient.SaveCard(ctx, &pb.CardData{
+		CardID: "1234567891234567",
+		Pass:   "123",
+		Date:   "2024/25",
+		Info:   gofakeit.Sentence(10),
+	})
+	assert.NoError(t, err)
+
 	res, err := st.JWTClient.ShowData(ctx, &pb.Empty{})
 
 	assert.NoError(t, err)
@@ -66,5 +74,6 @@ func TestShowData_HappyPath(t *testing.T) {
 	assert.Equal(t, 2, len(res.GetTd()))
 	assert.Equal(t, 3, len(res.GetLpd()))
 	assert.Equal(t, 1, len(res.GetBd()))
+	assert.Equal(t, 1, len(res.GetCd()))
 
 }

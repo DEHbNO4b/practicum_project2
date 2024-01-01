@@ -51,3 +51,11 @@ func domainBinaryToProto(td models.BinaryData) *pb.BinaryData {
 		Info: td.Meta(),
 	}
 }
+func domainCardToProto(cd models.Card) *pb.CardData {
+	return &pb.CardData{
+		CardID: string(cd.CardID()),
+		Pass:   cd.Pass(),
+		Date:   cd.Date(),
+		Info:   cd.Meta(),
+	}
+}

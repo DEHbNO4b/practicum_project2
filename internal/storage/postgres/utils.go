@@ -13,16 +13,16 @@ func userToDomain(u User) models.User {
 	return user
 }
 
-func domainUserToLocal(u models.User) User {
+// func domainUserToLocal(u models.User) User {
 
-	user := User{}
+// 	user := User{}
 
-	user.Id = u.ID()
-	user.Login = u.Login()
-	user.PassHash = u.PassHash()
+// 	user.Id = u.ID()
+// 	user.Login = u.Login()
+// 	user.PassHash = u.PassHash()
 
-	return user
-}
+// 	return user
+// }
 
 func lpToDomain(lp LogPassData) models.LogPassData {
 
