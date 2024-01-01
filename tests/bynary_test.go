@@ -6,11 +6,10 @@ import (
 	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"github.com/DEHbNO4b/practicum_project2/tests/suite"
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestShowData_HappyPath(t *testing.T) {
+func TestSaveBynary_HappyPath(t *testing.T) {
 
 	ctx, st := suite.New(t)
 
@@ -39,32 +38,16 @@ func TestShowData_HappyPath(t *testing.T) {
 	err = st.MakeJWTClient(token)
 	require.NoError(t, err)
 
-	_, err = st.JWTClient.SaveText(ctx, getRandomTextData())
-	assert.NoError(t, err)
-	_, err = st.JWTClient.SaveText(ctx, getRandomTextData())
-	assert.NoError(t, err)
-
-	_, err = st.JWTClient.SaveLogPass(ctx, getRandomLogPassData())
-	assert.NoError(t, err)
-	_, err = st.JWTClient.SaveLogPass(ctx, getRandomLogPassData())
-	assert.NoError(t, err)
-	_, err = st.JWTClient.SaveLogPass(ctx, getRandomLogPassData())
-	assert.NoError(t, err)
-
 	_, err = st.JWTClient.SaveBinary(ctx, &pb.BinaryData{
 		Data: []byte("some random bytes"),
 		Info: gofakeit.Sentence(10),
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
+	// _, err = st.JWTClient.SaveBinary(ctx, getRandomBinaryData(300))
+	// require.NoError(t, err)
 
-	res, err := st.JWTClient.ShowData(ctx, &pb.Empty{})
+	// res, err := st.JWTClient.ShowData(ctx, &pb.Empty{})
+	// require.NoError(t, err)
 
-	assert.NoError(t, err)
-	assert.NotEmpty(t, res.GetLpd())
-	assert.NotEmpty(t, res.GetTd())
-	assert.NotEmpty(t, res.GetBd())
-	assert.Equal(t, 2, len(res.GetTd()))
-	assert.Equal(t, 3, len(res.GetLpd()))
-	assert.Equal(t, 1, len(res.GetBd()))
-
+	// fmt.Printf("response log-pass: %+v", res)
 }

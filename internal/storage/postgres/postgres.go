@@ -197,6 +197,10 @@ func (s *Storage) SaveBinary(ctx context.Context, bd models.BinaryData) error {
 
 	op := "storage.postgres.SaveBinary"
 
+	log := s.log.With(slog.String("op", op))
+
+	log.Info("attemting to save binary data")
+
 	local := domainBinaryToLocal(bd)
 
 	_, err := s.db.ExecContext(ctx,
@@ -210,6 +214,10 @@ func (s *Storage) SaveBinary(ctx context.Context, bd models.BinaryData) error {
 }
 func (s *Storage) BinaryData(ctx context.Context, id int64) ([]models.BinaryData, error) {
 	op := "storage.postgres.BinaryData"
+
+	log := s.log.With(slog.String("op", op))
+
+	log.Info("attemting to get binary data from bd")
 
 	ans := make([]models.BinaryData, 0, 10)
 

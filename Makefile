@@ -1,5 +1,5 @@
 
-run: certificates migrate proto build_server build_client
+run: certificates migrate gen_proto build_server build_client
 	./server
 
 certificates: 
@@ -11,7 +11,7 @@ migrate: build_migrate
 build_migrate:
 	go build -o . ./cmd/migrator
 
-proto:
+gen_proto:
 	protoc --go_out=./proto/gen/keeper --go_opt=paths=source_relative --go-grpc_out=./proto/gen/keeper --go-grpc_opt=paths=source_relative proto/goph_keeper.proto 
 
 build_server: 

@@ -155,5 +155,7 @@ func valid(auth []string) bool {
 
 	_, err := jwt.GetClaims(token)
 
+	// fmt.Printf("claims in interceptor: %+v", claims)
+
 	return err == nil
 }

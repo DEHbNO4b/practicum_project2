@@ -11,6 +11,7 @@ service GophKeeper{
 
     rpc SaveLogPass(LogPassData) returns (Empty);
     rpc SaveText(TextData) returns (Empty);
+    rpc SaveBinary(BinaryData) returns (Empty);
     
     rpc ShowData(Empty) returns (Data);
 
@@ -48,11 +49,17 @@ message TextData{
     string info=2;
 }
 
+message BinaryData{
+    bytes data=1;
+    string info=2;
+}
+
 
 
 // Show data messages
 message Data{
     repeated LogPassData lpd=1;
     repeated TextData td=2;
+    repeated BinaryData bd=3;
 }
 

@@ -149,6 +149,29 @@ func (s *ServerApi) SaveText(ctx context.Context, req *pb.TextData) (*pb.Empty, 
 	return &res, nil
 }
 
+// SaveBinary is a handle to save log-pass data
+
+func (s *ServerApi) SaveBinary(ctx context.Context, req *pb.BinaryData) (*pb.Empty, error) {
+
+	res := pb.Empty{}
+
+	md, _ := metadata.FromIncomingContext(ctx)
+
+	claims, _ := jwt.GetClaims(strings.TrimPrefix(md["authorization"][0], "Bearer "))
+
+	bd := models.BinaryData{}
+	bd.SetData(req.GetData())
+	bd.SetMeta(req.GetInfo())
+	bd.SetUserID(claims.UserID)
+
+	err := s.keeper.SaveBinary(ctx, bd)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
+	}
+
+	return &res, nil
+}
+
 func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, error) {
 
 	res := pb.Data{}
@@ -172,6 +195,13 @@ func (s *ServerApi) ShowData(ctx context.Context, req *pb.Empty) (*pb.Data, erro
 	}
 	for _, el := range td {
 		res.Td = append(res.Td, domainTextToProto(el))
+	}
+	bd, err := s.keeper.BinaryData(ctx, claims.UserID)
+	if err != nil {
+		return &res, status.Error(codes.Internal, "internal error")
+	}
+	for _, el := range bd {
+		res.Bd = append(res.Bd, domainBinaryToProto(el))
 	}
 
 	return &res, nil

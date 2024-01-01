@@ -45,3 +45,9 @@ func domainTextToProto(td models.TextData) *pb.TextData {
 		Info: td.Meta(),
 	}
 }
+func domainBinaryToProto(td models.BinaryData) *pb.BinaryData {
+	return &pb.BinaryData{
+		Data: td.Data(),
+		Info: td.Meta(),
+	}
+}
