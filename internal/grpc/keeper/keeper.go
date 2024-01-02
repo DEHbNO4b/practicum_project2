@@ -80,6 +80,7 @@ func (s *ServerApi) Register(ctx context.Context, req *pb.AuthInfo) (*pb.Registe
 func (s *ServerApi) Login(ctx context.Context, req *pb.AuthInfo) (*pb.LoginResponse, error) {
 
 	res := pb.LoginResponse{}
+	res.Name = req.GetLogin()
 
 	err := validateLogin(req)
 	if err != nil {

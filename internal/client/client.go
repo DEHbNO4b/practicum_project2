@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
+	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	myjwt "github.com/DEHbNO4b/practicum_project2/internal/lib/jwt"
 	pb "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"google.golang.org/grpc"
@@ -123,12 +124,14 @@ func (g *GophClient) MakeJWTClient(token string) error {
 	return nil
 }
 
-func (g *GophClient) Login(login, pass string) error {
+func (g *GophClient) Login(login, pass string) (models.User, error) {
 
 	req := pb.AuthInfo{
 		Login:    login,
 		Password: pass,
 	}
+
+	u := models.User{}
 
 	res, err := g.AuthClient.Login(g.Ctx, &req)
 
@@ -137,25 +140,28 @@ func (g *GophClient) Login(login, pass string) error {
 		if ok {
 			if status.Code() == codes.InvalidArgument {
 				fmt.Println("wrong login or password, please try again")
-				return err
+				return u, err
 			} else {
 				// в остальных случаях выводим код ошибки в виде строки и сообщение
 				fmt.Println(status.Code(), status.Message())
-				return err
+				return u, err
 			}
 		} else {
 			fmt.Printf("Не получилось распарсить ошибку %v", err)
-			return err
+			return u, err
 		}
 	}
 
+	u.SetLogin(res.GetName())
+
 	g.Token = res.GetToken()
+
 	err = g.MakeJWTClient(g.Token)
 	if err != nil {
-		return err
+		return u, err
 	}
 
-	return nil
+	return u, nil
 }
 
 func (g *GophClient) SignUp(login, pass string) error {

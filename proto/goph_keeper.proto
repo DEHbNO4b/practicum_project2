@@ -34,6 +34,7 @@ message RegisterResponse{
 
 message LoginResponse{
     string token =1;
+    string name=2;
 }
 //Save log-pass data messages
 
