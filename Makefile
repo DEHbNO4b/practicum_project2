@@ -20,5 +20,6 @@ build_server:
 build_client: 
 	GOARCH=amd64 GOOS=windows go build -o . ./cmd/client
 
-
+run_client: build_client
+	./client
 
