@@ -1,57 +1,91 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/DEHbNO4b/practicum_project2/internal/client"
+	"github.com/DEHbNO4b/practicum_project2/internal/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-type Contact struct {
-	login string
+type GophClient interface {
+	SignUp(login, pass string) error
+	Login(login, pass string) error
 }
 
-var (
-	app      = tview.NewApplication()
-	contacts []Contact
-)
-
 func main() {
-	text := tview.NewTextView().
-		SetTextColor(tcell.ColorGreen).
-		SetText("(q) to quit")
 
-	// box := tview.NewBox().SetBorder(true).SetTitle("Goph_Keeper")
+	//create context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	if err := app.SetRoot(text, true).EnableMouse(true).Run(); err != nil {
+	//create logger
+	// log := setupLogger(cfg.Env)
+
+	//read config
+	cfg := config.MustLoadClientCfg()
+
+	//create client
+	client, err := client.New(ctx, cfg)
+	if err != nil {
 		panic(err)
 	}
 
-	// //create context
-	// ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
+	app := app(client)
 
-	// //create logger
-	// // log := setupLogger(cfg.Env)
+	if err := app.EnableMouse(true).Run(); err != nil {
+		panic(err)
+	}
+}
+func app(client GophClient) *tview.Application {
 
-	// //read config
-	// cfg := config.MustLoadClientCfg()
+	user := user{}
 
-	// //create client
-	// client, err := client.New(ctx, cfg)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	pages := tview.NewPages()
 
-	// switch cfg.Flags.LaunchMode {
-	// case "l":
-	// 	_, err := client.Login()
-	// 	if err != nil {
-	// 		return
-	// 	}
+	text := tview.NewTextView().
+		SetTextColor(tcell.ColorGreen).
+		SetText("(a) to add a new contact \n(q) to quit")
 
-	// case "r":
-	// 	_, err := client.Registert()
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// }
+	app := tview.NewApplication()
+
+	// Создаем форму для ввода данных
+	form := tview.NewForm().
+		AddInputField("Имя пользователя", "", 20, nil, func(login string) {
+			user.login = login
+		}).
+		AddPasswordField("Пароль", "", 20, '*', func(pass string) {
+			user.password = pass
+		}).
+		AddButton("Логин", func() { // Обработка логина
+			err := client.Login(user.login, user.password)
+			if err != nil {
+				fmt.Println("try eshe raz")
+				time.Sleep(10 * time.Second)
+				app.Stop()
+			}
+			pages.SwitchToPage("Menu")
+		}).
+		AddButton("Регистрация", func() { // Обработка регистрации
+			err := client.SignUp(user.login, user.password)
+			if err != nil {
+				fmt.Println("try eshe raz")
+				time.Sleep(10 * time.Second)
+				app.Stop()
+			}
+			pages.SwitchToPage("Menu")
+		}).
+		AddButton("Выход", func() {
+			app.Stop()
+		})
+
+	pages.AddPage("Menu", text, true, true)
+	pages.AddPage("Auth", form, true, true)
+
+	app.SetRoot(pages, true)
+
+	return app
 }

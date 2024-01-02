@@ -74,7 +74,6 @@ func New(t *testing.T) (context.Context, *Suite) {
 	)
 	if err != nil {
 		t.Fatalf("grpc server connection failed: %v", err)
-
 	}
 
 	return ctx, &Suite{
