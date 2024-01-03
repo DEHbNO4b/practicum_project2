@@ -10,24 +10,19 @@ import (
 )
 
 type ClientConfig struct {
-	FileCfg FileCfg
-	Flags   ClientFlags
+	Env   string `yaml:"env" env-default:"local"`
+	GRPC  GRPCConfig
+	Flags ClientFlags
 }
 
-type FileCfg struct {
-	Env  string `yaml:"env" env-default:"local"`
-	GRPC GRPCConfig
-}
 type ClientFlags struct {
-	LaunchMode string
-	Path       string
+	Path string
 }
 
 var (
-	Flags      ClientFlags
-	FileConfig FileCfg
-	Config     ClientConfig
-	once       sync.Once
+	Flags  ClientFlags
+	Config ClientConfig
+	once   sync.Once
 )
 
 func MustLoadClientCfg() ClientConfig {
@@ -41,10 +36,10 @@ func MustLoadClientCfg() ClientConfig {
 			panic("config file is not exists: " + Flags.Path)
 		}
 
-		if err := cleanenv.ReadConfig(Flags.Path, &FileConfig); err != nil {
+		if err := cleanenv.ReadConfig(Flags.Path, &Config); err != nil {
 			panic("cannot read file configs: " + err.Error())
 		}
-		Config.FileCfg = FileConfig
+
 		Config.Flags = Flags
 	})
 
@@ -53,8 +48,7 @@ func MustLoadClientCfg() ClientConfig {
 
 func parseFlags() {
 
-	flag.StringVar(&Flags.Path, "cfg", "./config/server.yaml", "path to config yaml file")
-	flag.StringVar(&Flags.LaunchMode, "m", "./config/server.yaml", "path to config yaml file")
+	flag.StringVar(&Flags.Path, "cfg", "./config/client.yaml", "path to config yaml file")
 
 	flag.Parse()
 

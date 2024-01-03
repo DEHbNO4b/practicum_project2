@@ -37,7 +37,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 
 	cfg := config.MustLoadClientCfg()
 
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.FileCfg.GRPC.Timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.GRPC.Timeout)
 
 	t.Cleanup(func() {
 		t.Helper()
@@ -69,7 +69,7 @@ func New(t *testing.T) (context.Context, *Suite) {
 	}
 	conn, err := grpc.DialContext(
 		ctx,
-		cfg.FileCfg.GRPC.Host+":"+strconv.Itoa(cfg.FileCfg.GRPC.Port),
+		cfg.GRPC.Host+":"+strconv.Itoa(cfg.GRPC.Port),
 		opts...,
 	)
 	if err != nil {
@@ -119,7 +119,7 @@ func (s *Suite) MakeJWTClient(token string) error {
 
 	conn, err := grpc.DialContext(
 		s.ctx,
-		cfg.FileCfg.GRPC.Host+":"+strconv.Itoa(cfg.FileCfg.GRPC.Port),
+		cfg.GRPC.Host+":"+strconv.Itoa(cfg.GRPC.Port),
 		opts...,
 	)
 	if err != nil {

@@ -62,7 +62,7 @@ func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
 	}
 	conn, err := grpc.DialContext(
 		ctx,
-		cfg.FileCfg.GRPC.Host+":"+strconv.Itoa(cfg.FileCfg.GRPC.Port),
+		cfg.GRPC.Host+":"+strconv.Itoa(cfg.GRPC.Port),
 		opts...,
 	)
 	if err != nil {
@@ -112,7 +112,7 @@ func (g *GophClient) MakeJWTClient(token string) error {
 
 	conn, err := grpc.DialContext(
 		g.Ctx,
-		cfg.FileCfg.GRPC.Host+":"+strconv.Itoa(cfg.FileCfg.GRPC.Port),
+		cfg.GRPC.Host+":"+strconv.Itoa(cfg.GRPC.Port),
 		opts...,
 	)
 	if err != nil {

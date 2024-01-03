@@ -8,6 +8,7 @@ import (
 
 	"github.com/DEHbNO4b/practicum_project2/internal/app"
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/logger/sl"
 )
 
 func main() {
@@ -15,7 +16,7 @@ func main() {
 	cfg := config.MustLoadServCfg()
 
 	//  logger setup
-	log := setupLogger(cfg.Env)
+	log := sl.SetupLogger(cfg.Env)
 
 	log.Info("starting app")
 	log.Info("cfg", slog.Any("", cfg))
@@ -33,17 +34,4 @@ func main() {
 	log.Info("stopping application", slog.String("signal", sign.String()))
 	application.GRPCSrv.Stop()
 
-}
-
-func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
-	switch env {
-	case "local":
-		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	case "dev":
-		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	case "prod":
-		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
-	}
-	return log
 }

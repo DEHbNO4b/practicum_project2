@@ -11,8 +11,10 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-var servOnce sync.Once
-var ServerCfg ServerConfig
+var (
+	servOnce  sync.Once
+	ServerCfg ServerConfig
+)
 
 type ServerConfig struct {
 	Env       string        `yaml:"env" env-default:"local"`
