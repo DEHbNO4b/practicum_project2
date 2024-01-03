@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/DEHbNO4b/practicum_project2/internal/client"
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
+	"github.com/DEHbNO4b/practicum_project2/internal/grpc/client"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -82,6 +82,16 @@ func app(client GophClient) *tview.Application {
 				time.Sleep(10 * time.Second)
 				app.Stop()
 			}
+
+			u, err := client.Login(clientInfo.login, clientInfo.password)
+			if err != nil {
+				fmt.Println("Game Over")
+				time.Sleep(10 * time.Second)
+				app.Stop()
+			}
+
+			clientInfo.login = u.Login()
+
 			pages.SwitchToPage("Menu")
 		}).
 		AddButton("Выход", func() {
