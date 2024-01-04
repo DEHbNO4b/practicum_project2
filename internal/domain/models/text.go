@@ -25,3 +25,11 @@ func (t *TextData) Text() string {
 func (t *TextData) Meta() string {
 	return t.meta
 }
+
+func (t *TextData) String() string {
+
+	str := "text: " + t.text + "\n"
+	str += "info: " + t.meta + "\n"
+
+	return str
+}

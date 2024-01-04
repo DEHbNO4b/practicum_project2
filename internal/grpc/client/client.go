@@ -247,3 +247,16 @@ func (g *GophClient) SaveBinary(ctx context.Context, b *models.BinaryData) error
 	})
 	return err
 }
+
+func (g *GophClient) ShowData(ctx context.Context) (*models.Data, error) {
+
+	res, err := g.JWTClient.ShowData(ctx, &pb.Empty{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	data := pbDataToDomain(res)
+
+	return data, nil
+}

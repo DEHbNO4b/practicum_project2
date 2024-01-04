@@ -1,5 +1,5 @@
 
-run: certificates migrate gen_proto build_server build_client
+run: certificates gen_proto build_server build_client
 	./server
 
 certificates: 

@@ -14,6 +14,7 @@ type GophClient interface {
 	SaveCard(ctx context.Context, c *models.Card) error
 	SaveText(ctx context.Context, t *models.TextData) error
 	SaveBinary(ctx context.Context, t *models.BinaryData) error
+	ShowData(ctx context.Context) (*models.Data, error)
 }
 
 type App struct {
@@ -46,9 +47,11 @@ func New(ctx context.Context, client GophClient) *App {
 
 	app.SetSaveData()
 
+	app.SetShowData()
+
 	setPages(&app)
 
-	app.Pages.SetBorder(true).SetTitle("Goph_keeper")
+	// app.Pages.SetBorder(true).SetTitle("Goph_keeper")
 	app.App.SetRoot(app.Pages, true)
 
 	return &app

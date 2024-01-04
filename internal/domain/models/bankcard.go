@@ -75,3 +75,13 @@ func (c *Card) Date() string {
 func (c *Card) Meta() string {
 	return c.meta
 }
+
+func (c *Card) String() string {
+
+	str := "card id: " + string(c.cardID) + "\n"
+	str += "password: " + c.pass + "\n"
+	str += "date: " + c.date + "\n"
+	str += "info: " + c.meta + "\n"
+
+	return str
+}

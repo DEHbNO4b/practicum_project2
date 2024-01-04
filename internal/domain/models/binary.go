@@ -33,3 +33,11 @@ func (b *BinaryData) Data() []byte {
 func (b *BinaryData) Meta() string {
 	return b.meta
 }
+
+func (b *BinaryData) String() string {
+
+	str := "data: " + string(b.data) + "\n"
+	str += "info: " + b.meta + "\n"
+
+	return str
+}
