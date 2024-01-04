@@ -44,7 +44,7 @@ func New(ctx context.Context, client GophClient) *App {
 
 	setAuthForm(&app)
 
-	SetSaveData(&app)
+	app.SetSaveData()
 
 	setPages(&app)
 

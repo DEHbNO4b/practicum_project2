@@ -3,10 +3,11 @@ package tui
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-func SetSaveData(app *App) {
+func (a *App) SetSaveData() {
 
 	logPass := tview.NewForm()
 
@@ -14,15 +15,33 @@ func SetSaveData(app *App) {
 
 	text := tview.NewFlex()
 
-	app.setLogPass(logPass)
-	app.setCard(card)
-	app.setText(text)
+	binary := tview.NewFlex()
 
-	app.SaveData.
+	a.setLogPass(logPass)
+	a.setCard(card)
+	a.setText(text)
+
+	a.SaveData.SetBorder(true).SetTitle("save data")
+	a.SaveData.
 		AddPage("log-pass", logPass, true, true).
 		AddPage("card", card, true, false).
-		AddPage("text", text, true, false)
+		AddPage("text", text, true, false).
+		AddPage("binary", binary, true, false)
 
+	a.SaveData.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == 113 { // 'q'
+			a.App.Stop()
+		} else if event.Rune() == 108 { // 'l'
+			a.SaveData.SwitchToPage("log-pass")
+		} else if event.Rune() == 99 { // 'c'
+			a.SaveData.SwitchToPage("card")
+		} else if event.Rune() == 116 { // 't'
+			a.SaveData.SwitchToPage("text")
+		} else if event.Rune() == 98 { // 'b'
+			a.SaveData.SwitchToPage("log-pass")
+		}
+		return event
+	})
 }
 
 func (a *App) setLogPass(w *tview.Form) {
