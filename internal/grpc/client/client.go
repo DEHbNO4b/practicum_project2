@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -25,6 +26,8 @@ var (
 	keyFile  = "./certs/client_key.pem"
 	caFile   = "./certs/ca_cert.pem"
 )
+
+var ErrNotAuthorized = errors.New("not authorized")
 
 type GophClient struct {
 	Ctx        context.Context
@@ -189,4 +192,17 @@ func (g *GophClient) SignUp(login, pass string) error {
 	}
 
 	return nil
+}
+
+func (g *GophClient) SaveLogPass(ctx context.Context, lp models.LogPassData) error {
+	if g.JWTClient == nil {
+		return ErrNotAuthorized
+	}
+
+	_, err := g.JWTClient.SaveLogPass(ctx, &pb.LogPassData{
+		Login:    lp.Login(),
+		Password: lp.Pass(),
+		Info:     lp.Meta(),
+	})
+	return err
 }

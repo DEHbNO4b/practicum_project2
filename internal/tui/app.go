@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"context"
+
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
 	"github.com/rivo/tview"
 )
@@ -8,9 +10,11 @@ import (
 type GophClient interface {
 	SignUp(login, pass string) error
 	Login(login, pass string) (models.User, error)
+	SaveLogPass(ctx context.Context, lp models.LogPassData) error
 }
 
 type App struct {
+	ctx        context.Context
 	client     GophClient         //client API
 	ClientInfo userInfo           // client information
 	App        *tview.Application //widgets...
