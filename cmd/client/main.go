@@ -26,7 +26,7 @@ func main() {
 		panic(err)
 	}
 
-	app := tui.New(client)
+	app := tui.New(ctx, client)
 
 	if err := app.App.EnableMouse(true).Run(); err != nil {
 		panic(err)

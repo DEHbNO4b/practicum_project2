@@ -21,3 +21,8 @@ type TextData struct {
 	Text string
 	Meta string
 }
+
+type BinaryData struct {
+	Data string
+	Info string
+}

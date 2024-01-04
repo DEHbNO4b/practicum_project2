@@ -81,12 +81,17 @@ func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
 	}
 	return &pbClient, nil
 }
-func (g *GophClient) MakeJWTClient(token string) error {
+
+func (g *GophClient) MakeJWTClient() error {
+
+	if g.Token == "" {
+		return errors.New("emty token")
+	}
 
 	cfg := config.MustLoadClientCfg()
 
 	jwtCreds := myjwt.JwtCredentials{
-		Token: token,
+		Token: g.Token,
 	}
 
 	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
@@ -159,7 +164,8 @@ func (g *GophClient) Login(login, pass string) (models.User, error) {
 
 	g.Token = res.GetToken()
 
-	err = g.MakeJWTClient(g.Token)
+	err = g.MakeJWTClient()
+
 	if err != nil {
 		return u, err
 	}
@@ -194,15 +200,50 @@ func (g *GophClient) SignUp(login, pass string) error {
 	return nil
 }
 
-func (g *GophClient) SaveLogPass(ctx context.Context, lp models.LogPassData) error {
+func (g *GophClient) SaveLogPass(ctx context.Context, lp *models.LogPassData) error {
 	if g.JWTClient == nil {
-		return ErrNotAuthorized
+		g.MakeJWTClient()
 	}
 
 	_, err := g.JWTClient.SaveLogPass(ctx, &pb.LogPassData{
 		Login:    lp.Login(),
 		Password: lp.Pass(),
 		Info:     lp.Meta(),
+	})
+	return err
+}
+
+func (g *GophClient) SaveCard(ctx context.Context, c *models.Card) error {
+	if g.JWTClient == nil {
+		g.MakeJWTClient()
+	}
+	_, err := g.JWTClient.SaveCard(ctx, &pb.CardData{
+		CardID: string(c.CardID()),
+		Pass:   c.Pass(),
+		Date:   c.Date(),
+		Info:   c.Meta(),
+	})
+	return err
+}
+
+func (g *GophClient) SaveText(ctx context.Context, t *models.TextData) error {
+	if g.JWTClient == nil {
+		g.MakeJWTClient()
+	}
+	_, err := g.JWTClient.SaveText(ctx, &pb.TextData{
+		Text: t.Text(),
+		Info: t.Meta(),
+	})
+	return err
+}
+
+func (g *GophClient) SaveBinary(ctx context.Context, b *models.BinaryData) error {
+	if g.JWTClient == nil {
+		g.MakeJWTClient()
+	}
+	_, err := g.JWTClient.SaveBinary(ctx, &pb.BinaryData{
+		Data: b.Data(),
+		Info: b.Meta(),
 	})
 	return err
 }

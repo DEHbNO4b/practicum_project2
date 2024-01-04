@@ -10,7 +10,10 @@ import (
 type GophClient interface {
 	SignUp(login, pass string) error
 	Login(login, pass string) (models.User, error)
-	SaveLogPass(ctx context.Context, lp models.LogPassData) error
+	SaveLogPass(ctx context.Context, lp *models.LogPassData) error
+	SaveCard(ctx context.Context, c *models.Card) error
+	SaveText(ctx context.Context, t *models.TextData) error
+	SaveBinary(ctx context.Context, t *models.BinaryData) error
 }
 
 type App struct {
@@ -25,9 +28,10 @@ type App struct {
 	Info       *tview.TextView
 }
 
-func New(client GophClient) *App {
+func New(ctx context.Context, client GophClient) *App {
 
 	app := App{
+		ctx:        ctx,
 		client:     client,
 		ClientInfo: userInfo{login: "unknown user"},
 		App:        tview.NewApplication(),
