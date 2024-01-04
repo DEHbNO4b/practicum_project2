@@ -14,10 +14,11 @@ type App struct {
 	client     GophClient         //client API
 	ClientInfo userInfo           // client information
 	App        *tview.Application //widgets...
-	Flex       *tview.Flex
-	Info       *tview.TextView
 	Pages      *tview.Pages
 	AuthForm   *tview.Form
+	SaveData   *tview.Flex
+	ShowData   *tview.Flex
+	Info       *tview.TextView
 }
 
 func New(client GophClient) *App {
@@ -26,11 +27,22 @@ func New(client GophClient) *App {
 		client:     client,
 		ClientInfo: userInfo{login: "unknown user"},
 		App:        tview.NewApplication(),
-		Flex:       tview.NewFlex(),
 		Pages:      tview.NewPages(),
+		SaveData:   tview.NewFlex(),
+		ShowData:   tview.NewFlex(),
 		Info:       tview.NewTextView(),
 		AuthForm:   tview.NewForm(),
 	}
 
+	setAuthForm(&app)
+
+	SetSaveData(&app)
+
+	setPages(&app)
+
+	app.Pages.SetBorder(true).SetTitle("Goph_keeper")
+	app.App.SetRoot(app.Pages, true)
+
 	return &app
+
 }
