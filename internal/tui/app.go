@@ -23,7 +23,7 @@ type App struct {
 	App        *tview.Application //widgets...
 	Pages      *tview.Pages
 	AuthForm   *tview.Form
-	SaveData   *tview.Flex
+	SaveData   *tview.Pages
 	ShowData   *tview.Flex
 	Info       *tview.TextView
 }
@@ -36,7 +36,7 @@ func New(ctx context.Context, client GophClient) *App {
 		ClientInfo: userInfo{login: "unknown user"},
 		App:        tview.NewApplication(),
 		Pages:      tview.NewPages(),
-		SaveData:   tview.NewFlex(),
+		SaveData:   tview.NewPages(),
 		ShowData:   tview.NewFlex(),
 		Info:       tview.NewTextView(),
 		AuthForm:   tview.NewForm(),

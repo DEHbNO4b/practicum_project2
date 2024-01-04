@@ -19,9 +19,9 @@ func SetSaveData(app *App) {
 	app.setText(text)
 
 	app.SaveData.
-		AddItem(logPass, 0, 1, true).
-		AddItem(card, 0, 1, false).
-		AddItem(text, 0, 2, false)
+		AddPage("log-pass", logPass, true, true).
+		AddPage("card", card, true, false).
+		AddPage("text", text, true, false)
 
 }
 
