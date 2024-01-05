@@ -37,5 +37,5 @@ func (lp *LogPassData) Meta() string {
 func (lp *LogPassData) String() string {
 	return "login: " + lp.login + "\n" +
 		"password: " + lp.pass + "\n" +
-		"info: " + lp.meta
+		"info: " + lp.meta + "\n"
 }

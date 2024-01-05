@@ -23,3 +23,6 @@ build_client:
 run_client: build_client
 	./client
 
+
+gen_mocks:
+	mockgen -destination=mocks/mock_keeperClient -package=mocks github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto GophKeeperClient

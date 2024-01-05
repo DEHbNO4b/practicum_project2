@@ -7,6 +7,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.7.0
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
+	github.com/golang/mock v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.5.1
 	github.com/rivo/tview v0.0.0-20240101144852-b3bd1aa5e9f2

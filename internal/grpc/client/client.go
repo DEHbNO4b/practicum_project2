@@ -27,7 +27,10 @@ var (
 	caFile   = "./certs/ca_cert.pem"
 )
 
-var ErrNotAuthorized = errors.New("not authorized")
+var (
+	ErrNotAuthorized = errors.New("Not authorized")
+	ErrEmtyData      = errors.New("Empty data attempting to save")
+)
 
 type GophClient struct {
 	Ctx        context.Context
@@ -134,6 +137,10 @@ func (g *GophClient) MakeJWTClient() error {
 
 func (g *GophClient) Login(login, pass string) (models.User, error) {
 
+	op := "grpc.client.Login"
+
+	log := g.Log.With(slog.String("op", op))
+
 	req := pb.AuthInfo{
 		Login:    login,
 		Password: pass,
@@ -147,11 +154,12 @@ func (g *GophClient) Login(login, pass string) (models.User, error) {
 		status, ok := status.FromError(err)
 		if ok {
 			if status.Code() == codes.InvalidArgument {
-				fmt.Println("wrong login or password, please try again")
+				fmt.Println()
+				log.Error("wrong login or password, please try again")
 				return u, err
 			} else {
 				// в остальных случаях выводим код ошибки в виде строки и сообщение
-				fmt.Println(status.Code(), status.Message())
+				log.Error("error", slog.String("message", status.Message()))
 				return u, err
 			}
 		} else {
@@ -201,6 +209,11 @@ func (g *GophClient) SignUp(login, pass string) error {
 }
 
 func (g *GophClient) SaveLogPass(ctx context.Context, lp *models.LogPassData) error {
+
+	if lp.Login() == "" || lp.Pass() == "" {
+		return ErrEmtyData
+	}
+
 	if g.JWTClient == nil {
 		g.MakeJWTClient()
 	}
@@ -247,17 +260,6 @@ func (g *GophClient) SaveBinary(ctx context.Context, b *models.BinaryData) error
 	})
 	return err
 }
-
-// func (g *GophClient) ShowData(ctx context.Context) (*pb.Data, error) {
-
-// 	res, err := g.JWTClient.ShowData(ctx, &pb.Empty{})
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return res, nil
-// }
 
 func (g *GophClient) ShowData(ctx context.Context) (*models.Data, error) {
 

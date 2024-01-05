@@ -20,6 +20,7 @@ func (a *App) SetSaveData() {
 	a.setLogPass(logPass)
 	a.setCard(card)
 	a.setText(text)
+	a.setBinary(binary)
 
 	info := tview.NewTextView().
 		SetTextColor(tcell.ColorGreen).
