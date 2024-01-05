@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/logger/sl"
 	"github.com/DEHbNO4b/practicum_project2/internal/storage"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -110,6 +111,9 @@ func (s *Storage) LogPass(ctx context.Context, id int64) ([]models.LogPassData, 
 
 	op := "storage.postgres.LogPass"
 
+	log := s.log.With(slog.String("op", op))
+	log.Info("attemting to get LogPass data")
+
 	ans := make([]models.LogPassData, 0, 10)
 
 	rows, err := s.db.QueryContext(ctx, `SELECT login, pass, meta from logpass_data WHERE user_id=$1`, id)
@@ -146,6 +150,9 @@ func (s *Storage) SaveText(ctx context.Context, td models.TextData) error {
 
 	op := "storage.postgres.SaveText"
 
+	log := s.log.With(slog.String("op", op))
+	log.Info("attemting to save text data")
+
 	local := domainTextToLocal(td)
 
 	_, err := s.db.ExecContext(ctx,
@@ -161,6 +168,9 @@ func (s *Storage) SaveText(ctx context.Context, td models.TextData) error {
 func (s *Storage) TextData(ctx context.Context, id int64) ([]models.TextData, error) {
 
 	op := "storage.postgres.TextData"
+
+	log := s.log.With(slog.String("op", op))
+	log.Info("attemting to get text data")
 
 	ans := make([]models.TextData, 0, 10)
 
@@ -254,6 +264,9 @@ func (s *Storage) SaveCard(ctx context.Context, cd models.Card) error {
 
 	op := "storage.postgres.SaveCard"
 
+	log := s.log.With(slog.String("op", op))
+	log.Info("attemting to save card data")
+
 	local := domainCardToLocal(cd)
 
 	_, err := s.db.ExecContext(ctx,
@@ -271,11 +284,14 @@ func (s *Storage) CardData(ctx context.Context, id int64) ([]models.Card, error)
 
 	op := "storage.postgres.CardData"
 
+	log := s.log.With(slog.String("op", op))
+	log.Info("attemting to get card data")
+
 	ans := make([]models.Card, 0, 10)
 
 	rows, err := s.db.QueryContext(ctx, `SELECT card_id, pass,date,meta from card_data WHERE user_id=$1`, id)
 	if err != nil {
-
+		log.Error("err", sl.Err(err))
 		if errors.Is(err, sql.ErrNoRows) {
 			return ans, fmt.Errorf("%s %w", op, storage.ErrNoDataFound)
 		}
@@ -296,11 +312,16 @@ func (s *Storage) CardData(ctx context.Context, id int64) ([]models.Card, error)
 
 		cd, err := cardToDomain(local)
 		if err != nil {
-			return ans, err
+			log.Error("err", sl.Err(err))
+			continue
 		}
 
 		ans = append(ans, cd)
 
 	}
+	if err := rows.Err(); err != nil {
+		log.Error("err", sl.Err(err))
+	}
+
 	return ans, nil
 }

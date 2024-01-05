@@ -12,10 +12,14 @@ func (a *App) SetShowData() {
 
 	loadButton := tview.NewButton("load data").SetSelectedFunc(func() {
 		data, err := a.client.ShowData(a.ctx)
+
 		if err != nil {
 			fmt.Println(err)
+			return
 		}
+
 		textView.SetText(data.String())
+
 	})
 	returnButton := tview.NewButton("return").SetSelectedFunc(func() {
 		a.Pages.SwitchToPage("save data")
