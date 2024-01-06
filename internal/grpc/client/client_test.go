@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
-	"github.com/DEHbNO4b/practicum_project2/mocks"
+	// "github.com/DEHbNO4b/practicum_project2/mocks"
 
 	pbkeeper "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"github.com/golang/mock/gomock"

@@ -25,4 +25,4 @@ run_client: build_client
 
 
 gen_mocks:
-	mockgen -destination=mocks/mock_keeperClient -package=mocks github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto GophKeeperClient
+	mockgen -destination=mocks/mock_gophClient.go -package=mocks github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto GophKeeperClient
