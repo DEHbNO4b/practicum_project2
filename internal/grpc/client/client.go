@@ -235,12 +235,18 @@ func (g *GophClient) SaveCard(ctx context.Context, c *models.Card) error {
 	if g.JWTClient == nil {
 		g.MakeJWTClient()
 	}
+
+	if c.CardID() == nil || c.Pass() == "" || c.Date() == "" {
+		return ErrEmtyData
+	}
+
 	_, err := g.JWTClient.SaveCard(ctx, &pb.CardData{
 		CardID: string(c.CardID()),
 		Pass:   c.Pass(),
 		Date:   c.Date(),
 		Info:   c.Meta(),
 	})
+
 	return err
 }
 
