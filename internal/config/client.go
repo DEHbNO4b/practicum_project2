@@ -2,7 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"sync"
 
@@ -29,7 +28,6 @@ func MustLoadClientCfg() ClientConfig {
 
 	// path := filepath.FromSlash(fetchConfigPath())
 	once.Do(func() {
-		fmt.Println("once do ")
 		parseFlags()
 
 		if _, err := os.Stat(Flags.Path); os.IsNotExist(err) {

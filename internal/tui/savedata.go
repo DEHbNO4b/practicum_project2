@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"fmt"
-
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -74,7 +72,10 @@ func (a *App) setLogPass(w *tview.Form) {
 			err := a.client.SaveLogPass(a.ctx, &data)
 			if err != nil {
 				a.SetInfoRow(" ERROR: " + err.Error())
+				a.SaveData.SwitchToPage("info")
+				return
 			}
+			a.SetInfoRow("success")
 			a.SaveData.SwitchToPage("info")
 		}).
 		AddButton("return", func() {
@@ -85,7 +86,7 @@ func (a *App) setLogPass(w *tview.Form) {
 func (a *App) setCard(w *tview.Form) {
 	cd := Card{}
 
-	w.SetBorder(true).SetTitle("bankCard data")
+	// w.SetBorder(true).SetTitle("bankCard data")
 	w.AddInputField("cards number", "", 20, nil, func(num string) { cd.CardID = num }).
 		AddInputField("pass", "", 20, nil, func(pass string) { cd.Pass = pass }).
 		AddInputField("date", "", 20, nil, func(date string) { cd.Date = date }).
@@ -94,8 +95,12 @@ func (a *App) setCard(w *tview.Form) {
 			data := cdToDomain(cd)
 			err := a.client.SaveCard(a.ctx, &data)
 			if err != nil {
-				fmt.Println(err)
+				a.SetInfoRow(" ERROR: " + err.Error())
+				a.SaveData.SwitchToPage("info")
+				return
 			}
+			a.SetInfoRow("success")
+			a.SaveData.SwitchToPage("info")
 		}).
 		AddButton("return", func() {
 			a.SaveData.SwitchToPage("info")
@@ -121,9 +126,12 @@ func (a *App) setText(w *tview.Flex) {
 		t := tdToDomain(text)
 		err := a.client.SaveText(a.ctx, &t)
 		if err != nil {
-			fmt.Println(err)
+			a.SetInfoRow(" ERROR: " + err.Error())
+			a.SaveData.SwitchToPage("info")
+			return
 		}
-		fmt.Println("text data saved")
+		a.SetInfoRow("success")
+		a.SaveData.SwitchToPage("info")
 	})
 	retButton := tview.NewButton("return").SetSelectedFunc(func() { a.SaveData.SwitchToPage("info") })
 
@@ -158,9 +166,12 @@ func (a *App) setBinary(w *tview.Flex) {
 		data := bdToDomain(bd)
 		err := a.client.SaveBinary(a.ctx, &data)
 		if err != nil {
-			fmt.Println(err)
+			a.SetInfoRow(" ERROR: " + err.Error())
+			a.SaveData.SwitchToPage("info")
+			return
 		}
-		fmt.Println("binary data saved")
+		a.SetInfoRow("success")
+		a.SaveData.SwitchToPage("info")
 	})
 	retButton := tview.NewButton("return").SetSelectedFunc(func() { a.SaveData.SwitchToPage("info") })
 

@@ -19,14 +19,14 @@ func (c *Card) SetUserID(id int64) {
 
 func (c *Card) SetCardID(id []rune) error {
 
-	if len(id) != 16 {
-		return errors.New("wrong id")
-	}
-	for i := 0; i < len(id); i++ {
-		if !unicode.IsDigit(id[i]) {
-			return errors.New("wrong id")
-		}
-	}
+	// if len(id) != 16 {
+	// 	return errors.New("wrong id")
+	// }
+	// for i := 0; i < len(id); i++ {
+	// 	if !unicode.IsDigit(id[i]) {
+	// 		return errors.New("wrong id")
+	// 	}
+	// }
 
 	c.cardID = id
 

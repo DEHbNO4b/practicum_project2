@@ -86,7 +86,17 @@ func client(t *testing.T) *GophClient {
 }
 func TestGophClient_SaveCard(t *testing.T) {
 
-	client := client(t)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	m := mocks.NewMockGophKeeperClient(ctrl)
+
+	m.EXPECT().SaveCard(gomock.Any(), gomock.Any()).Return(&pbkeeper.Empty{}, nil)
+
+	client := GophClient{
+		Ctx:       context.Background(),
+		JWTClient: m,
+	}
 
 	type args struct {
 		ctx context.Context
@@ -98,6 +108,15 @@ func TestGophClient_SaveCard(t *testing.T) {
 	card.SetPass("123")
 	card.SetDate("2014/03")
 
+	cardWD := models.Card{}
+	cardWD.SetCardID([]rune("1234 1234 1234 1234"))
+	cardWD.SetPass("123")
+	cardWD.SetDate("2014-03")
+
+	card_emty_id := models.Card{}
+	card_emty_id.SetPass("123")
+	card_emty_id.SetDate("2014/03")
+
 	tests := []struct {
 		name    string
 		g       *GophClient
@@ -106,14 +125,33 @@ func TestGophClient_SaveCard(t *testing.T) {
 	}{
 		{
 			name: "pozitive case",
-			g:    client,
+			g:    &client,
 			args: args{
 				ctx: context.Background(),
 				c:   &card,
 			},
 			wantErr: false,
 		},
+		{
+			name: "negative case #empty id",
+			g:    &client,
+			args: args{
+				ctx: context.Background(),
+				c:   &card_emty_id,
+			},
+			wantErr: true,
+		},
+		{
+			name: "negative case #wrong date",
+			g:    &client,
+			args: args{
+				ctx: context.Background(),
+				c:   &cardWD,
+			},
+			wantErr: true,
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := tt.g.SaveCard(tt.args.ctx, tt.args.c); (err != nil) != tt.wantErr {

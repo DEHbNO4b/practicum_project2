@@ -9,6 +9,8 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"time"
+	"unicode"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
@@ -30,6 +32,7 @@ var (
 var (
 	ErrNotAuthorized = errors.New("not authorized")
 	ErrEmtyData      = errors.New("empty data")
+	ErrWrongData     = errors.New("wrong data")
 )
 
 type GophClient struct {
@@ -236,10 +239,9 @@ func (g *GophClient) SaveCard(ctx context.Context, c *models.Card) error {
 		g.MakeJWTClient()
 	}
 
-	if c.CardID() == nil || c.Pass() == "" || c.Date() == "" {
-		return ErrEmtyData
+	if err := validateCard(c); err != nil {
+		return err
 	}
-
 	_, err := g.JWTClient.SaveCard(ctx, &pb.CardData{
 		CardID: string(c.CardID()),
 		Pass:   c.Pass(),
@@ -251,13 +253,16 @@ func (g *GophClient) SaveCard(ctx context.Context, c *models.Card) error {
 }
 
 func (g *GophClient) SaveText(ctx context.Context, t *models.TextData) error {
+
 	if g.JWTClient == nil {
 		g.MakeJWTClient()
 	}
+
 	_, err := g.JWTClient.SaveText(ctx, &pb.TextData{
 		Text: t.Text(),
 		Info: t.Meta(),
 	})
+
 	return err
 }
 
@@ -283,4 +288,57 @@ func (g *GophClient) ShowData(ctx context.Context) (*models.Data, error) {
 	data := pbDataToDomain(res)
 
 	return data, nil
+}
+
+func validateCard(c *models.Card) error {
+
+	if c.CardID() == nil || c.Pass() == "" || c.Date() == "" {
+		return ErrEmtyData
+	}
+
+	id := c.CardID()
+	digits := 0
+	for _, el := range id {
+		if unicode.IsDigit(el) {
+			digits++
+		}
+	}
+
+	if digits != 16 {
+		return fmt.Errorf("%w: number of digits in card id not equal 16", ErrWrongData)
+	}
+
+	pass := c.Pass()
+
+	digits = 0
+
+	for _, el := range pass {
+		if unicode.IsDigit(el) {
+			digits++
+		}
+	}
+
+	if digits != 3 {
+
+		return fmt.Errorf("%w: number of digits in card pass not equal 3", ErrWrongData)
+
+	}
+
+	d := c.Date()
+
+	if _, err := validateDateTime(d, "2006/01"); err != nil {
+
+		return fmt.Errorf("%w: wrong format of date,day format must be like '2006/01'", ErrWrongData)
+
+	}
+
+	return nil
+}
+
+func validateDateTime(input string, format string) (bool, error) {
+	_, err := time.Parse(format, input)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
