@@ -5,6 +5,7 @@ import (
 
 	"github.com/DEHbNO4b/practicum_project2/internal/config"
 	"github.com/DEHbNO4b/practicum_project2/internal/grpc/client"
+	"github.com/DEHbNO4b/practicum_project2/internal/lib/logger/sl"
 	"github.com/DEHbNO4b/practicum_project2/internal/tui"
 )
 
@@ -18,10 +19,10 @@ func main() {
 	cfg := config.MustLoadClientCfg()
 
 	//create logger
-	// log := sl.SetupLogger(cfg.Env)
+	log := sl.SetupLogger(cfg.Env)
 
 	//create client
-	client, err := client.New(ctx, cfg)
+	client, err := client.New(ctx, cfg, log)
 	if err != nil {
 		panic(err)
 	}

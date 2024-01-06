@@ -22,15 +22,15 @@ func setAuthForm(app *App) {
 			}
 			app.ClientInfo.login = u.Login()
 
+			app.SetInfoRow(" Hello, " + u.Login())
+
 			app.Pages.SwitchToPage("save data")
 
 		}).
 		AddButton("Регистрация", func() { // Обработка регистрации
 			err := app.client.SignUp(app.ClientInfo.login, app.ClientInfo.password)
 			if err != nil {
-				fmt.Println("Game Over")
-				time.Sleep(10 * time.Second)
-				app.App.Stop()
+				app.SetInfoRow("Error: " + err.Error() + ", try again")
 			}
 
 			u, err := app.client.Login(app.ClientInfo.login, app.ClientInfo.password)

@@ -28,8 +28,8 @@ var (
 )
 
 var (
-	ErrNotAuthorized = errors.New("Not authorized")
-	ErrEmtyData      = errors.New("Empty data attempting to save")
+	ErrNotAuthorized = errors.New("not authorized")
+	ErrEmtyData      = errors.New("empty data")
 )
 
 type GophClient struct {
@@ -41,7 +41,7 @@ type GophClient struct {
 	Log        *slog.Logger
 }
 
-func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
+func New(ctx context.Context, cfg config.ClientConfig, log *slog.Logger) (*GophClient, error) {
 
 	cert, err := tls.LoadX509KeyPair(crtFile, keyFile)
 	if err != nil {
@@ -81,6 +81,7 @@ func New(ctx context.Context, cfg config.ClientConfig) (*GophClient, error) {
 		Ctx:        ctx,
 		AuthClient: client,
 		Cfg:        cfg,
+		Log:        log,
 	}
 	return &pbClient, nil
 }
@@ -182,6 +183,10 @@ func (g *GophClient) Login(login, pass string) (models.User, error) {
 }
 
 func (g *GophClient) SignUp(login, pass string) error {
+
+	if login == "" || pass == "" {
+		return ErrEmtyData
+	}
 
 	_, err := g.AuthClient.Register(g.Ctx, &pb.AuthInfo{
 		Login:    login,

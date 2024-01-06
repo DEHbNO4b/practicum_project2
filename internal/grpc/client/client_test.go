@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/DEHbNO4b/practicum_project2/internal/domain/models"
-	// "github.com/DEHbNO4b/practicum_project2/mocks"
+	"github.com/DEHbNO4b/practicum_project2/mocks"
 
 	pbkeeper "github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto"
 	"github.com/golang/mock/gomock"
@@ -18,7 +18,8 @@ func TestGophClient_SaveLogPass(t *testing.T) {
 
 	m := mocks.NewMockGophKeeperClient(ctrl)
 
-	m.EXPECT.SaveLogPass(gomock.Any(), gomock.Any()).Return(&pbkeeper.Empty{}, nil)
+	// m.EXPECT.SaveLogPass(gomock.Any(), gomock.Any()).Return(&pbkeeper.Empty{}, nil)
+	m.EXPECT().SaveLogPass(gomock.Any(), gomock.Any()).Return(&pbkeeper.Empty{}, nil)
 
 	client := GophClient{
 		Ctx:       context.Background(),
@@ -28,6 +29,8 @@ func TestGophClient_SaveLogPass(t *testing.T) {
 	lp := &models.LogPassData{}
 	lp.SetLogin("login")
 	lp.SetPass("pass")
+
+	nlp := &models.LogPassData{}
 
 	type args struct {
 		ctx context.Context
@@ -46,6 +49,16 @@ func TestGophClient_SaveLogPass(t *testing.T) {
 				ctx: context.Background(),
 				lp:  lp,
 			},
+			wantErr: false,
+		},
+		{
+			name: "negative case",
+			g:    &client,
+			args: args{
+				ctx: context.Background(),
+				lp:  nlp,
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

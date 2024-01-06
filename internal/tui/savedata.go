@@ -33,6 +33,7 @@ func (a *App) SetSaveData() {
 				(s) to load all saved data 
 		
 		(q) to quit`)
+
 	info.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 113 { // 'q'
 			a.App.Stop()
@@ -64,7 +65,7 @@ func (a *App) setLogPass(w *tview.Form) {
 
 	lpd := LogPass{}
 
-	w.SetBorder(true).SetTitle("auth data")
+	// w.SetBorder(true).SetTitle("auth data")
 	w.AddInputField("login", "", 30, nil, func(login string) { lpd.Login = login }).
 		AddInputField("password", "", 30, nil, func(pass string) { lpd.Pass = pass }).
 		AddInputField("info", "", 30, nil, func(info string) { lpd.Info = info }).
@@ -72,7 +73,7 @@ func (a *App) setLogPass(w *tview.Form) {
 			data := lpToDomain(lpd)
 			err := a.client.SaveLogPass(a.ctx, &data)
 			if err != nil {
-				fmt.Println(err)
+				a.SetInfoRow(" ERROR: " + err.Error())
 			}
 			a.SaveData.SwitchToPage("info")
 		}).
