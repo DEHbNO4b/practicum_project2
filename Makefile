@@ -16,9 +16,13 @@ gen_proto:
 
 build_server: 
 	GOARCH=amd64 GOOS=windows go build -o . ./cmd/server
+	GOARCH=amd64 GOOS=linux go build -o . ./cmd/server
+	GOARCH=amd64 GOOS=darwin go build -o . ./cmd/server
 
 build_client: 
 	GOARCH=amd64 GOOS=windows go build -o . ./cmd/client
+	GOARCH=amd64 GOOS=linux go build -o . ./cmd/client
+	GOARCH=amd64 GOOS=darwin go build -o . ./cmd/client
 
 run_client: build_client
 	./client
@@ -26,3 +30,4 @@ run_client: build_client
 
 gen_mocks:
 	mockgen -destination=mocks/mock_gophClient.go -package=mocks github.com/DEHbNO4b/practicum_project2/proto/gen/keeper/proto GophKeeperClient
+
