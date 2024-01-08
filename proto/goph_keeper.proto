@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package gophKeeper;
+
+option go_package="proto/gen/keeper;pbkeeper";
+
+service GophKeeper{
+
+    rpc Register(AuthInfo) returns (RegisterResponse);
+    rpc Login(AuthInfo) returns (LoginResponse);
+
+    rpc SaveLogPass(LogPassData) returns (Empty);
+    rpc SaveText(TextData) returns (Empty);
+    rpc SaveBinary(BinaryData) returns (Empty);
+    rpc SaveCard(CardData) returns (Empty);
+    
+    rpc ShowData(Empty) returns (Data);
+
+}
+
+message Empty{
+
+}
+
+// req-log messages
+message AuthInfo{
+    string login =1;
+    string password = 2;
+}
+
+message RegisterResponse{
+    int64 user_id =1;
+}
+
+message LoginResponse{
+    string token =1;
+    string name=2;
+}
+//Save log-pass data messages
+
+message LogPassData{
+    string login = 1;
+    string password = 2;
+    string info = 3;
+}
+
+message TextData{
+    string text=1;
+    string info=2;
+}
+
+message BinaryData{
+    bytes data=1;
+    string info=2;
+}
+
+message CardData{
+    string cardID=1;
+    string pass =2;
+    string date=3;
+    string info=4;
+
+}
+
+// Show data messages
+message Data{
+    repeated LogPassData lpd=1;
+    repeated TextData td=2;
+    repeated BinaryData bd=3;
+    repeated CardData cd=4;
+}
+
